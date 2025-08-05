@@ -1,11 +1,34 @@
 import { client, urlFor } from "@/sanity/client"; // adjust the path to your client.ts
 import Image from "next/image";
 
+
+interface SanityImage {
+  asset: {
+    _ref: string;
+    _type: string;
+    url?: string;
+  };
+  crop?: {
+    _type: string;
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
+  hotspot?: {
+    _type: string;
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  };
+}
+
 interface Post {
   _id: string;
   title: string;
   slug: { current: string };
-  mainImage?: any;
+  mainImage?: SanityImage;
   publishedAt?: string;
 }
 

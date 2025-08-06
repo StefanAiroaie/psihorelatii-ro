@@ -3,6 +3,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 
+import GTM from '@/components/GTM';
+import { CookieConsentProvider } from '@/context/CookieConsent';
+import CookieBanner from '@/components/CookieBanner';
+
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,13 +30,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ro">
+      <CookieConsentProvider>
 
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Header />
-        {children}
-      </body>
+        <GTM />
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <Header />
+
+
+          {children}
+          <CookieBanner />
+        </body>
+      </CookieConsentProvider>
     </html>
   );
 }

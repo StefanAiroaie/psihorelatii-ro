@@ -1,90 +1,23 @@
-import { client, urlFor } from "@/sanity/client"; // adjust the path to your client.ts
-import Image from "next/image";
+// src/app/page.tsx  (fără "use client")
+import { urlFor, client } from "@/sanity/client"
+import Image from "next/image"
+import Categories from "@/components/Categories"
 
-
-interface SanityImage {
-  asset: {
-    _ref: string;
-    _type: string;
-    url?: string;
-  };
-  crop?: {
-    _type: string;
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-  };
-  hotspot?: {
-    _type: string;
-    x: number;
-    y: number;
-    height: number;
-    width: number;
-  };
-}
-
-interface Post {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  mainImage?: SanityImage;
-  publishedAt?: string;
-}
-
-interface Category {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  posts: Post[];
-}
+export const revalidate = 60  // ISR: regenerează pagina la fiecare 60s
 
 export default async function Home() {
-  const categories: Category[] = await client.fetch(`
-    *[_type == "psihorelatii_ro_category"]{
-      _id,
-      title,
-      slug,
-      "posts": *[_type == "psihorelatii_ro_post" && references(^._id)] | order(publishedAt desc){
-        _id,
-        title,
-        slug,
-        mainImage,
-        publishedAt
-      }
-    }
-  `);
+  // 1. Fetch-ezi datele direct în componenta de server
+  const categories: Array<{ title: string; slug: { current: string } }> =
+    await client.fetch(`*[_type=='category']{title, slug}`)
 
+
+
+  // 3. Le treci ca props componetei
   return (
-    <main className="max-w-6xl mx-auto p-6 space-y-16">
-      {categories.map((cat) => (
-        <section key={cat._id} id={cat.slug.current} className="space-y-4">
-          <h2 className="text-3xl font-bold">{cat.title}</h2>
 
-          {cat.posts.length > 0 ? (
-            <div className="grid md:grid-cols-3 gap-6">
-              {cat.posts.map((post) => (
-                <article key={post._id} className="border rounded p-4">
-                  <a href={`/articol/${post.slug.current}`}>
-                    {post.mainImage && (
-                      <Image
-                        src={urlFor(post.mainImage).width(600).url()}
-                        alt={post.title}
-                        width={600}
-                        height={400}
-                        className="mb-2 rounded"
-                      />
-                    )}
-                    <h3 className="font-semibold">{post.title}</h3>
-                  </a>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">Nu există articole încă în această categorie.</p>
-          )}
-        </section>
-      ))}
-    </main>
-  );
-}
+    <>
+      <Categories data={categories} />
+
+    </>
+  )
+};

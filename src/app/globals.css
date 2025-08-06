@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+* {
+  /* max-width: 100%; */
+  box-sizing: border-box;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  /* min-width breakpoints – în rem pentru consecvență */
+  --breakpoint-sm: 22.5rem;
+  /* 360 px */
+  --breakpoint-md: 48rem;
+  /* 768 px */
+  --breakpoint-lg: 64rem;
+  /* 1024 px */
+  --breakpoint-xl: 80rem;
+  /* 1280 px */
+
+  /* Presonalized colors */
+
+  --color-light: rgb(254, 250, 250);
+  --color-primary: rgb(42, 100, 149);
+  --color-accent: rgb(238, 130, 50);
+  --color-muted: rgb(109, 109, 109);
+  --color-dark: rgb(60, 60, 60);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+html {
+  scroll-behavior: smooth;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+/* Anchor scroll offset for sticky header */
+[id] {
+  scroll-margin-top: 4rem;
+  /* adjust based on header height */
+}
+
+.btn {
+  @apply flex justify-center items-center h-[50px] px-8 font-semibold uppercase rounded text-white py-2 transition;
+}
+
+.btn-accent {
+  @apply bg-accent hover:bg-muted transition-all;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-black/60 transition-all;
+}
+
+.btn-white {
+  @apply bg-white hover:bg-muted text-primary hover:text-white transition-all;
 }

@@ -1,21 +1,30 @@
-
 import { client } from "@/sanity/client"
 import Image from "next/image";
 import { urlFor } from "@/sanity/client";
 
-export const revalidate = 60  // ISR: regenerează pagina la fiecare 60s
-export default async function Home() {
-  // 1. Fetch-ezi datele direct în componenta de server
-  const articles = await client.fetch(`
-    *[_type=='psihorelatii_ro_post']{
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const cats = await client.fetch(`*[_type=='category']{'categorySlug': slug.current}`);
+  return cats.map(c => ({ categories: c.categorySlug }));
+}
+
+export default async function CategoryPage({ params: { categories } }) {
+  const articles = await client.fetch(
+    `*[_type=='psihorelatii_ro_post' && $catSlug in categories[]->slug.current]{
       _id,
       title,
-      slug,
+      "slug": slug.current,
       description,
       mainImage
-    }
-  `)
+    }`,
+    { catSlug: categories }
+  );
 
+  const category = await client.fetch(
+    `*[_type=='category' && slug.current==$slug][0]{ title, description, coverImage }`,
+    { slug: categories }
+  );
 
   return (
 
@@ -24,14 +33,18 @@ export default async function Home() {
       <section className="mx-auto mt-32 max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
           <h2 className="text-4xl font-semibold tracking-tight text-balance text-primary sm:text-5xl">
-            Descoperă psihologia relațiilor și echilibrul interior
+            {category?.title || 'Descoperă psihologia relațiilor și echilibrul interior'}
           </h2>
           <p className="mt-2 text-lg/8 text-dark">
-            Pe <strong>psihorelatii.ro</strong> găsești sfaturi practice și articole
-            inspirate din psihologie pentru o viață mai armonioasă.
-            De la <strong>relații de cuplu</strong> și <strong>gestionarea emoțiilor</strong> până la <strong>dezvoltare personală</strong> și <strong>sănătate mintală</strong>,
-            fiecare articol este gândit să te ajute să înțelegi mai bine lumea ta interioară
-            și conexiunile cu cei din jur.
+            {category?.description || (
+              <>
+                Pe <strong>psihorelatii.ro</strong> găsești sfaturi practice și articole
+                inspirate din psihologie pentru o viață mai armonioasă.
+                De la <strong>relații de cuplu</strong> și <strong>gestionarea emoțiilor</strong> până la <strong>dezvoltare personală</strong> și <strong>sănătate mintală</strong>,
+                fiecare articol este gândit să te ajute să înțelegi mai bine lumea ta interioară
+                și conexiunile cu cei din jur.
+              </>
+            )}
           </p>
 
         </div>
@@ -54,7 +67,7 @@ export default async function Home() {
               <div className="max-w-xl">
                 <div className="group relative">
                   <h3 className="mt-3 text-lg/6 font-semibold text-primary group-hover:text-gray-600 ">
-                    <a href={`/${cat.slug?.current}`}>
+                    <a href={`/${categories}/${cat.slug}`}>
                       <span className="absolute inset-0" />
                       {cat.title}
                     </a>
@@ -70,7 +83,7 @@ export default async function Home() {
                 </div>
                 <div>
                   <a
-                    href={`/${cat.slug?.current}`}
+                    href={`/${categories}/${cat.slug}`}
                     className="text-sm text-primary hover:underline px-5"
                   >
                     citeste mai departe

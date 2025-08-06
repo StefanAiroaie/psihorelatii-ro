@@ -1,14 +1,20 @@
 // src/app/page.tsx  (fără "use client")
-import { urlFor, client } from "@/sanity/client"
-import Image from "next/image"
+import { client } from "@/sanity/client"
 import Categories from "@/components/Categories"
 
 export const revalidate = 60  // ISR: regenerează pagina la fiecare 60s
 
 export default async function Home() {
   // 1. Fetch-ezi datele direct în componenta de server
-  const categories: Array<{ title: string; slug: { current: string } }> =
-    await client.fetch(`*[_type=='category']{title, slug}`)
+  const categories = await client.fetch(`
+    *[_type=='psihorelatii_ro_category']{
+      _id,
+      title,
+      "slug": slug.current,
+      description,
+      mainImage
+    }
+  `)
 
 
 
@@ -16,7 +22,8 @@ export default async function Home() {
   return (
 
     <>
-      <Categories data={categories} />
+      <Categories categories={categories} />
+
 
     </>
   )

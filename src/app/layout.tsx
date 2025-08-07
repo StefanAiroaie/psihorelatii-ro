@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import GTM from '@/components/GTM';
 import { CookieConsentProvider } from '@/context/CookieConsent';
 import CookieBanner from '@/components/CookieBanner';
+import Footer from '@/components/Footer'
 
 
 const geistSans = Geist({
@@ -37,9 +38,8 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <Header />
-
-
           {children}
+          <Footer />
           <CookieBanner />
         </body>
       </CookieConsentProvider>

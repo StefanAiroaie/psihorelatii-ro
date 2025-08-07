@@ -2,11 +2,11 @@
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react';
 const navigation = [
-    { name: 'Relații de cuplu', href: '/relatii' },
-    { name: 'Psihologie practică', href: '/psihologie' },
-    { name: 'Dezvoltare personală', href: '/dezvoltare' },
-    { name: 'Gestionarea emoțiilor', href: '/emotii' },
-    { name: 'Sănătate mintală', href: '/sanatate' },
+    { name: 'Chalenges', href: '/#chaleges' },
+    { name: 'About Us', href: '/#aboutus' },
+    { name: 'Services', href: '/#services' },
+    { name: 'Advantages', href: '/#advantages' },
+    { name: 'FAQ', href: '/#faq' },
 ]
 import Image from 'next/image';
 import Link from "next/link";
@@ -22,14 +22,6 @@ import {
 } from '@headlessui/react';
 
 
-const links = [
-    { name: "Über uns", href: "/#about" },
-    { name: "Umsetzung", href: "/#umsetzung" },
-    { name: "Referenzen", href: "/#referenzen" },
-    { name: "Team", href: "/#team" },
-    { name: "Produktkataloge", href: "/#produktkataloge" },
-    { name: "FAQ", href: "/#faq" },
-];
 
 const Header = () => {
 

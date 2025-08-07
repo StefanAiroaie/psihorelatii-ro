@@ -5,13 +5,16 @@ import { urlFor } from "@/sanity/client";
 export const revalidate = 60;
 
 export async function generateStaticParams() {
-  const cats = await client.fetch(`*[_type=='category']{'categorySlug': slug.current}`);
-  return cats.map(c => ({ categories: c.categorySlug }));
+  const cats = await client.fetch(`*[_type=='category']{ slug }`);
+  return cats.map(c => ({ categories: c.slug.current }));
 }
 
-export default async function CategoryPage({ params: { categories } }) {
+export default async function CategoryPage({ params }) {
+  const { categories } = params;
+
+
   const articles = await client.fetch(
-    `*[_type=='psihorelatii_ro_post' && $catSlug in categories[]->slug.current]{
+    `*[_type=='psihorelatii_ro_article' && $catSlug in categories[]->slug.current]{
       _id,
       title,
       "slug": slug.current,

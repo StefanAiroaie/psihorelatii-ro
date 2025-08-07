@@ -5,21 +5,24 @@ import { PortableText } from "@portabletext/react";
 export const revalidate = 60;
 
 export async function generateStaticParams() {
-  const articles = await client.fetch(`
-    *[_type=="psihorelatii_ro_post"]{
-      "categorySlug": categories[0]->slug.current,
-      "articleSlug": slug.current
-    }
-  `);
+  const articles = await client.fetch(`*[
+    _type=="psihorelatii_ro_article" &&
+    defined(categories[0]->slug.current) &&
+    defined(slug.current)
+  ]{
+    "categories": categories[0]->slug.current,
+    "articles": slug.current
+  }`);
   return articles.map(a => ({
-    categories: a.categorySlug,
-    articles: a.articleSlug
+    categories: a.categories,
+    articles: a.articles
   }));
 }
 
-export default async function PageArticle({ params: { categories, articles } }) {
+export default async function PageArticle(props) {
+  const { categories, articles } = props.params;
   const article = await client.fetch(
-    `*[_type=="psihorelatii_ro_post" && slug.current==$slug][0]{
+    `*[_type=="psihorelatii_ro_article" && slug.current==$slug][0]{
       title,
       description,
       mainImage,

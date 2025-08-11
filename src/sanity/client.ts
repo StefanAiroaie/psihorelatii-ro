@@ -1,6 +1,11 @@
 import { createClient } from "next-sanity";
 import imageUrlBuilder from "@sanity/image-url";
 
+export const SANITY_DOC_TYPE = {
+  page: "psihorelatii_ro_page",
+  article: "psihorelatii_ro_article",
+  category: "psihorelatii_ro_category"
+};
 
 export const client = createClient({
   projectId: "rb4c8hjj",

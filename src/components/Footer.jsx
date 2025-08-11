@@ -1,9 +1,15 @@
-const footerNavigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Impressum', href: '/impressum' },
-    { name: 'Datenschutz', href: '/datenschutz' },
-]
 
+const navigation = {
+    footer: [
+        { name: 'Termeni și condiții', href: '/termeni-conditii' },
+        { name: 'Politica de confidențialitate', href: '/politica-confidentialitate' },
+        { name: 'Politica de cookie-uri', href: '/politica-cookie' },
+        { name: 'Declinarea responsabilității', href: '/disclaimer' },
+        { name: 'Politica de afiliere și reclame', href: '/politica-afiliere' },
+        { name: 'Despre noi', href: '/despre-noi' },
+        { name: 'Contact', href: '/contact' }
+    ],
+}
 
 
 const Footer = () => {
@@ -14,7 +20,7 @@ const Footer = () => {
             <footer className="bg-white mb-12">
                 <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
                     <nav aria-label="Footer" className="-mb-6 flex flex-wrap justify-center gap-x-12 gap-y-3 text-sm/6">
-                        {footerNavigation.map((item) => (
+                        {navigation.footer?.map((item) => (
                             <a key={item.name} href={item.href} className="text-primary hover:text-accent">
                                 {item.name}
                             </a>

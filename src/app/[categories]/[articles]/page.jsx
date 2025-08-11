@@ -2,6 +2,7 @@ import { client } from "@/sanity/client";
 import Image from "next/image";
 import { urlFor } from "@/sanity/client";
 import { PortableText } from "@portabletext/react";
+import { buildPageMetadata, DOMAIN, fromSanityImage } from "@/lib/metadata";
 
 function ptToPlain(blocks) {
   if (!Array.isArray(blocks)) return '';
@@ -35,32 +36,27 @@ export async function generateMetadata({ params }) {
       description,
       mainImage,
       publishedAt,
-      _updatedAt,
-      'slug': slug.current,
-      'cat': coalesce(categories[0]->slug.current, '')
+      _updatedAt
     }`,
     { slug: articles }
   );
 
-  const title = data?.title ? `${data.title} — Psihorelatii` : 'Articol — Psihorelatii';
-  const desc = data?.description || 'Citește articolul complet pe Psihorelatii.';
-  const url = `https://psihorelatii.ro/${categories}/${articles}`;
-  const image = data?.mainImage ? urlFor(data.mainImage).width(1200).height(630).url() : undefined;
+  // Prefer the article image; fall back to first article in category
+  let image = fromSanityImage(data?.mainImage);
+  if (!image) {
+    const first = await client.fetch(
+      `*[_type=='psihorelatii_ro_article' && $slug in categories[]->slug.current][0]{ mainImage }`,
+      { slug: categories }
+    );
+    image = fromSanityImage(first?.mainImage);
+  }
 
-  return {
-    title,
-    description: desc,
-    alternates: { canonical: url },
-    openGraph: {
-      title,
-      description: desc,
-      url,
-      type: 'article',
-      images: image ? [{ url: image, width: 1200, height: 630 }] : undefined
-    },
-    twitter: { card: image ? 'summary_large_image' : 'summary', title, description: desc, images: image ? [image] : undefined },
-    robots: { index: true, follow: true }
-  };
+  return buildPageMetadata({
+    title: data?.title || 'Articol',
+    description: data?.description,
+    image,
+    path: `/${categories}/${articles}`
+  });
 }
 
 export default async function PageArticle({ params }) {
@@ -91,13 +87,13 @@ export default async function PageArticle({ params }) {
             '@type': 'Article',
             headline: article?.title,
             description: article?.description,
-            image: article?.mainImage ? [urlFor(article.mainImage).width(1200).url()] : undefined,
+            image: article?.mainImage ? [fromSanityImage(article.mainImage)] : undefined,
             articleSection: categories,
             datePublished: article?.publishedAt || undefined,
             dateModified: article?._updatedAt || undefined,
             mainEntityOfPage: {
               '@type': 'WebPage',
-              '@id': `https://psihorelatii.ro/${categories}/${articles}`
+              '@id': `${DOMAIN}/${categories}/${articles}`
             }
           })
         }}
@@ -109,9 +105,9 @@ export default async function PageArticle({ params }) {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Acasă', item: 'https://psihorelatii.ro/' },
-              { '@type': 'ListItem', position: 2, name: categories, item: `https://psihorelatii.ro/${categories}` },
-              { '@type': 'ListItem', position: 3, name: article?.title, item: `https://psihorelatii.ro/${categories}/${articles}` }
+              { '@type': 'ListItem', position: 1, name: 'Acasă', item: `${DOMAIN}/` },
+              { '@type': 'ListItem', position: 2, name: categories, item: `${DOMAIN}/${categories}` },
+              { '@type': 'ListItem', position: 3, name: article?.title, item: `${DOMAIN}/${categories}/${articles}` }
             ]
           })
         }}

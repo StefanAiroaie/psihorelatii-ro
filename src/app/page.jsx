@@ -5,6 +5,25 @@ import { urlFor } from "@/sanity/client";
 import FAQ from '@/components/FAQ'
 import Categories from '@/components/Categories'
 
+import { buildPageMetadata, fromSanityImage } from "@/lib/metadata";
+import { client as sanityClient, SANITY_DOC_TYPE } from "@/sanity/client";
+
+// Use one Sanity page as source for homepage SEO (edit only this slug if needed)
+const HOMEPAGE_SLUG = "index"; // <- change to your homepage page slug in Sanity (e.g. "acasa")
+
+export async function generateMetadata() {
+  const page = await sanityClient.fetch(`*[_type=="${SANITY_DOC_TYPE.page}" && slug.current=="${HOMEPAGE_SLUG}"][0]{
+    title, description, mainImage
+  }`);
+
+  return buildPageMetadata({
+    title: page?.title,
+    description: page?.description,
+    image: fromSanityImage(page?.mainImage),
+    path: "/"
+  });
+}
+
 export const revalidate = 60  // ISR: Regenerate the page every 60s
 export default async function Home() {
   // 1. Fetch data directly in the server component

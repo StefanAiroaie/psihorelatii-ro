@@ -1,11 +1,31 @@
-import { client } from "@/sanity/client"
+import { client, SANITY_DOC_TYPE, urlFor } from "@/sanity/client"
 import Image from "next/image";
-import { urlFor } from "@/sanity/client";
+import { buildPageMetadata, DOMAIN, fromSanityImage } from "@/lib/metadata";
+
 
 export const revalidate = 60;
 
+export async function generateMetadata({ params }) {
+  const { categories } = params;
+  const data = await client.fetch(
+    `*[_type=='${SANITY_DOC_TYPE.category}' && slug.current==$slug][0]{
+      title,
+      description,
+      coverImage
+    }`,
+    { slug: categories }
+  );
+
+  return buildPageMetadata({
+    title: data?.title,
+    description: data?.description,
+    image: fromSanityImage(data?.coverImage),
+    path: `/${categories}`
+  });
+}
+
 export async function generateStaticParams() {
-  const cats = await client.fetch(`*[_type=='category']{ slug }`);
+  const cats = await client.fetch(`*[_type=='${SANITY_DOC_TYPE.category}']{ slug }`);
   return cats.map(c => ({ categories: c.slug.current }));
 }
 
@@ -14,7 +34,7 @@ export default async function CategoryPage({ params }) {
 
 
   const articles = await client.fetch(
-    `*[_type=='psihorelatii_ro_article' && $catSlug in categories[]->slug.current]{
+    `*[_type=='${SANITY_DOC_TYPE.article}' && $catSlug in categories[]->slug.current]{
       _id,
       title,
       "slug": slug.current,
@@ -25,7 +45,7 @@ export default async function CategoryPage({ params }) {
   );
 
   const category = await client.fetch(
-    `*[_type=='category' && slug.current==$slug][0]{ title, description, coverImage }`,
+    `*[_type=='${SANITY_DOC_TYPE.category}' && slug.current==$slug][0]{ title, description, coverImage }`,
     { slug: categories }
   );
 
@@ -39,8 +59,8 @@ export default async function CategoryPage({ params }) {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Acasă', item: 'https://psihorelatii.ro/' },
-              { '@type': 'ListItem', position: 2, name: `${params.categories}`, item: `https://psihorelatii.ro/${params.categories}` }
+              { '@type': 'ListItem', position: 1, name: 'Acasă', item: `${DOMAIN}/` },
+              { '@type': 'ListItem', position: 2, name: categories, item: `${DOMAIN}/${categories}` }
             ]
           })
         }}

@@ -2,6 +2,14 @@ import { client } from "@/sanity/client";
 import Image from "next/image";
 import { urlFor } from "@/sanity/client";
 import { PortableText } from "@portabletext/react";
+
+function ptToPlain(blocks) {
+  if (!Array.isArray(blocks)) return '';
+  return blocks
+    .map(block => Array.isArray(block.children) ? block.children.map(ch => ch.text || '').join('') : '')
+    .join('\n\n')
+    .trim();
+}
 export const revalidate = 60;
 
 export async function generateStaticParams() {
@@ -19,14 +27,56 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function PageArticle(props) {
-  const { categories, articles } = props.params;
+export async function generateMetadata({ params }) {
+  const { categories, articles } = await params;
+  const data = await client.fetch(
+    `*[_type=="psihorelatii_ro_article" && slug.current==$slug][0]{
+      title,
+      description,
+      mainImage,
+      publishedAt,
+      _updatedAt,
+      'slug': slug.current,
+      'cat': coalesce(categories[0]->slug.current, '')
+    }`,
+    { slug: articles }
+  );
+
+  const title = data?.title ? `${data.title} — Psihorelatii` : 'Articol — Psihorelatii';
+  const desc = data?.description || 'Citește articolul complet pe Psihorelatii.';
+  const url = `https://psihorelatii.ro/${categories}/${articles}`;
+  const image = data?.mainImage ? urlFor(data.mainImage).width(1200).height(630).url() : undefined;
+
+  return {
+    title,
+    description: desc,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description: desc,
+      url,
+      type: 'article',
+      images: image ? [{ url: image, width: 1200, height: 630 }] : undefined
+    },
+    twitter: { card: image ? 'summary_large_image' : 'summary', title, description: desc, images: image ? [image] : undefined },
+    robots: { index: true, follow: true }
+  };
+}
+
+export default async function PageArticle({ params }) {
+  const { categories, articles } = await params;
   const article = await client.fetch(
     `*[_type=="psihorelatii_ro_article" && slug.current==$slug][0]{
       title,
       description,
       mainImage,
-      body
+      body,
+      publishedAt,
+      _updatedAt,
+      faq[]{
+        question,
+        answer
+      }
     }`,
     { slug: articles }
   );
@@ -42,10 +92,12 @@ export default async function PageArticle(props) {
             headline: article?.title,
             description: article?.description,
             image: article?.mainImage ? [urlFor(article.mainImage).width(1200).url()] : undefined,
-            articleSection: params.categories,
+            articleSection: categories,
+            datePublished: article?.publishedAt || undefined,
+            dateModified: article?._updatedAt || undefined,
             mainEntityOfPage: {
               '@type': 'WebPage',
-              '@id': `https://psihorelatii.ro/${params.categories}/${params.articles}`
+              '@id': `https://psihorelatii.ro/${categories}/${articles}`
             }
           })
         }}
@@ -58,12 +110,31 @@ export default async function PageArticle(props) {
             '@type': 'BreadcrumbList',
             itemListElement: [
               { '@type': 'ListItem', position: 1, name: 'Acasă', item: 'https://psihorelatii.ro/' },
-              { '@type': 'ListItem', position: 2, name: params.categories, item: `https://psihorelatii.ro/${params.categories}` },
-              { '@type': 'ListItem', position: 3, name: article?.title, item: `https://psihorelatii.ro/${params.categories}/${params.articles}` }
+              { '@type': 'ListItem', position: 2, name: categories, item: `https://psihorelatii.ro/${categories}` },
+              { '@type': 'ListItem', position: 3, name: article?.title, item: `https://psihorelatii.ro/${categories}/${articles}` }
             ]
           })
         }}
       />
+      {Array.isArray(article?.faq) && article.faq.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: article.faq.map((item) => ({
+                '@type': 'Question',
+                name: item?.question,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: ptToPlain(item?.answer)
+                }
+              }))
+            })
+          }}
+        />
+      )}
       <section className="mx-auto mt-32 max-w-7xl px-6 lg:px-8">
         <article className="relative isolate overflow-hidden bg-white px-6 lg:overflow-visible lg:px-0">
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">

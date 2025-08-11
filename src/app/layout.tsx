@@ -7,7 +7,7 @@ import GTM from '@/components/GTM';
 import { CookieConsentProvider } from '@/context/CookieConsent';
 import CookieBanner from '@/components/CookieBanner';
 import Footer from '@/components/Footer'
-
+import Script from 'next/script';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,18 +31,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ro">
-      <CookieConsentProvider>
-
-        <GTM />
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+      <head>
+        <Script id="consent-init" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            // Default consent — denied until the user accepts in the banner
+            gtag('consent', 'default', {
+              'ad_storage': 'denied',
+              'analytics_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied'
+            });
+          `}
+        </Script>
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <CookieConsentProvider>
+          <GTM />
           <Header />
           {children}
           <Footer />
           <CookieBanner />
-        </body>
-      </CookieConsentProvider>
+        </CookieConsentProvider>
+      </body>
     </html>
   );
 }

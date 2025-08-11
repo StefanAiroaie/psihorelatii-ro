@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useCookieConsent } from '../context/CookieConsent';
 
 const CookieBanner = () => {
-    const { cookiesAccepted, acceptCookies, rejectCookies } = useCookieConsent();
+    const { cookiesAccepted, acceptCookies, rejectCookies, reopenPreferences } = useCookieConsent();
 
     return (
         <>
@@ -25,39 +25,28 @@ const CookieBanner = () => {
                     </p>
                     <div className="flex gap-3">
                         <button
-                            onClick={() => {
-                                acceptCookies();
-                                window.gtag && window.gtag('consent', 'update', {
-                                    ad_storage: 'granted',
-                                    analytics_storage: 'granted',
-                                    ad_user_data: 'granted',
-                                    ad_personalization: 'granted',
-                                });
-                                window.dataLayer = window.dataLayer || [];
-                                window.dataLayer.push({ event: 'cookie_consent_accepted' });
-                            }}
+                            onClick={acceptCookies}
                             className="bg-accent hover:bg-accent/80 text-white px-4 py-2 rounded"
                         >
                             Alle akzeptieren
                         </button>
                         <button
-                            onClick={() => {
-                                rejectCookies();
-                                window.gtag && window.gtag('consent', 'update', {
-                                    ad_storage: 'denied',
-                                    analytics_storage: 'denied',
-                                    ad_user_data: 'denied',
-                                    ad_personalization: 'denied',
-                                });
-                                window.dataLayer = window.dataLayer || [];
-                                window.dataLayer.push({ event: 'cookie_consent_rejected' });
-                            }}
+                            onClick={rejectCookies}
                             className="bg-muted hover:bg-muted/70 text-white px-4 py-2 rounded"
                         >
                             Ablehnen
                         </button>
                     </div>
                 </div>
+            )}
+            {cookiesAccepted !== undefined && (
+                <button
+                    onClick={reopenPreferences}
+                    className="fixed bottom-4 right-4 z-50 px-3 py-2 text-xs font-medium rounded-md bg-gray-800 text-white hover:bg-gray-700"
+                    aria-label="Cookie-Einstellungen"
+                >
+                    Cookie-Einstellungen
+                </button>
             )}
         </>
     );

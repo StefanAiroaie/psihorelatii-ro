@@ -60,6 +60,17 @@ export default async function Home() {
   return (
 
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'Psihorelatii',
+            url: 'https://psihorelatii.ro'
+          })
+        }}
+      />
       <div className="bg-white">
         <div className="isolate">
 

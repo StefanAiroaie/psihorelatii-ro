@@ -32,6 +32,19 @@ export default async function CategoryPage({ params }) {
   return (
 
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Acasă', item: 'https://psihorelatii.ro/' },
+              { '@type': 'ListItem', position: 2, name: `${params.categories}`, item: `https://psihorelatii.ro/${params.categories}` }
+            ]
+          })
+        }}
+      />
       {/* categories */}
       <section className="mx-auto mt-32 max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">

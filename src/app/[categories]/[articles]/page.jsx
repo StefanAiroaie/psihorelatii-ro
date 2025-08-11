@@ -33,6 +33,37 @@ export default async function PageArticle(props) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: article?.title,
+            description: article?.description,
+            image: article?.mainImage ? [urlFor(article.mainImage).width(1200).url()] : undefined,
+            articleSection: params.categories,
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': `https://psihorelatii.ro/${params.categories}/${params.articles}`
+            }
+          })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Acasă', item: 'https://psihorelatii.ro/' },
+              { '@type': 'ListItem', position: 2, name: params.categories, item: `https://psihorelatii.ro/${params.categories}` },
+              { '@type': 'ListItem', position: 3, name: article?.title, item: `https://psihorelatii.ro/${params.categories}/${params.articles}` }
+            ]
+          })
+        }}
+      />
       <section className="mx-auto mt-32 max-w-7xl px-6 lg:px-8">
         <article className="relative isolate overflow-hidden bg-white px-6 lg:overflow-visible lg:px-0">
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">

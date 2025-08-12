@@ -3,6 +3,7 @@ import Image from "next/image";
 import { urlFor } from "@/sanity/client";
 import { PortableText } from "@portabletext/react";
 import { buildPageMetadata, DOMAIN, fromSanityImage } from "@/lib/metadata";
+import FAQ from '@/components/FAQ'
 
 function ptToPlain(blocks) {
   if (!Array.isArray(blocks)) return '';
@@ -147,7 +148,7 @@ export default async function PageArticle({ params }) {
             <div className="-mt-12 -ml-12 p-12 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden">
               <img
                 alt={article?.title}
-                src={urlFor(article?.mainImage).url()}
+                src={urlFor(article?.mainImage)?.url()}
                 className="w-3xl max-w-none rounded-xl bg-gray-900 shadow-xl ring-1 ring-gray-400/10 sm:w-228"
               />
             </div>
@@ -180,8 +181,8 @@ export default async function PageArticle({ params }) {
                         types: {
                           image: ({ value }) => (
                             <Image
-                              src={urlFor(value).width(800).url()}
-                              alt={value.alt || 'Bild'}
+                              src={urlFor(value)?.width(800).url()}
+                              alt={value?.alt || 'Bild'}
                               className="my-4 rounded-lg shadow-md"
                             />
                           ),
@@ -195,6 +196,7 @@ export default async function PageArticle({ params }) {
           </div>
         </article>
       </section>
+      <FAQ faqs={article?.faq} />
     </>
   );
 }

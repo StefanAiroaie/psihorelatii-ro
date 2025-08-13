@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getPageBySlug } from "@/sanity/client";
 
 // SINGLE SOURCE OF TRUTH for this static page
-const PAGE_SLUG = "politica-cookies"; // change only here
+const PAGE_SLUG = "politica-cookie"; // change only here
 const PAGE_URL = `${DOMAIN}/${PAGE_SLUG}`;
 
 export async function generateMetadata() {

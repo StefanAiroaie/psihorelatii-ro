@@ -45,26 +45,6 @@ export default async function PageArticle({ params }) {
 
   return (
     <>
-      {Array.isArray(article?.faq) && article.faq.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'FAQPage',
-              mainEntity: article.faq.map((item) => ({
-                '@type': 'Question',
-                name: item?.question,
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: ptToPlain(item?.answer)
-                }
-              }))
-            })
-          }}
-        />
-      )}
-
       <PageTemplate page={article} jsonLdType="Article" canonical={`/${categories}/${articles}`} />
 
       {Array.isArray(article?.faq) && article.faq.length > 0 && (

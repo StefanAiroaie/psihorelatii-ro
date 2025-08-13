@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { PortableText } from "@portabletext/react";
 import { urlFor } from "@/sanity/client";
-import { DOMAIN } from "@/lib/metadata";
+import { DOMAIN, SITE_NAME } from "@/lib/metadata";
 
 export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }) {
     const path = canonical?.startsWith('/') ? canonical : `/${canonical ?? ''}`;
@@ -20,8 +20,10 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
             datePublished: page?._createdAt || undefined,
             dateModified: page?._updatedAt || undefined,
             author: page?.author?.name
-                ? { "@type": "Person", name: page.author.name }
-                : { "@type": "Organization", name: "Psihorelatii.ro" },
+                ? { "@type": "Person", name: page.author.name, url: page?.author?.url || undefined }
+                : { "@type": "Organization", name: SITE_NAME, url: DOMAIN },
+            publisher: { "@type": "Organization", name: SITE_NAME, url: DOMAIN },
+
             mainEntityOfPage: { "@type": "WebPage", "@id": absUrl }
         }
         : {

@@ -22,7 +22,8 @@ export function fromSanityImage(img) {
  *     path: `/${slug}`
  *   });
  */
-export function buildPageMetadata({ title, description, image, path = "/" } = {}) {
+export function buildPageMetadata(input) {
+    const { title, description, image, path = "/" } = input || {};
     const fullTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
     const desc = description || "Pagini informative.";
     const canonical = `${DOMAIN}${path}`;

@@ -2,10 +2,8 @@
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react';
 const navigation = [
-    { name: 'Chalenges', href: '/#chaleges' },
-    { name: 'About Us', href: '/#aboutus' },
-    { name: 'Services', href: '/#services' },
-    { name: 'Advantages', href: '/#advantages' },
+    { name: 'Articole', href: '/#articole' },
+    { name: 'Informatii pe categorii', href: '/#categorii' },
     { name: 'FAQ', href: '/#faq' },
 ]
 import Image from 'next/image';

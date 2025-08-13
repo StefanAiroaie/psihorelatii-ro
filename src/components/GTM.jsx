@@ -3,7 +3,7 @@ import Script from 'next/script';
 import { useCookieConsent } from '../context/CookieConsent';
 
 
-const GTM_ID = 'GTM-sssss';
+const GTM_ID = 'GTM-KFBNX4ZW';
 
 const GTM = () => {
     const { cookiesAccepted } = useCookieConsent();
@@ -28,13 +28,7 @@ const GTM = () => {
                 />
             )}
 
-            {/* Heyflow Script */}
-            {cookiesAccepted && (
-                <Script
-                    src="https://assets.prd.heyflow.com/builder/widget/latest/webview.js"
-                    strategy="afterInteractive"
-                />
-            )}
+
         </>
     );
 };

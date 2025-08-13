@@ -73,6 +73,22 @@ export default async function Page() {
           })
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            itemListElement: articlesWithHref.map((art, idx) => ({
+              "@type": "ListItem",
+              position: idx + 1,
+              url: `${DOMAIN}${art.href}`,
+              name: art.title,
+              description: art.description || undefined
+            }))
+          })
+        }}
+      />
 
       <PageTemplate
         page={page}
@@ -83,9 +99,9 @@ export default async function Page() {
       <section id="categorii" className="mx-auto mt-24 max-w-7xl px-6 lg:px-8">
         <Categories categories={categories} />
       </section>
-      <section className="mx-auto mt-24 max-w-7xl px-6 lg:px-8">
+      <section id="articole" className="mx-auto mt-24 max-w-7xl px-6 lg:px-8">
         <Articles
-          id="articole"
+
           articles={articlesWithHref}
           title="Articole la întâmplare"
           intro="O selecție aleatorie la fiecare refresh."

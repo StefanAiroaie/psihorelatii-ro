@@ -17,7 +17,7 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
             headline: page?.title,
             description: page?.description,
             image: ogImage ? [ogImage] : undefined,
-            datePublished: page?.publishedAt || undefined,
+            datePublished: page?._createdAt || undefined,
             dateModified: page?._updatedAt || undefined,
             author: page?.author?.name
                 ? { "@type": "Person", name: page.author.name }
@@ -52,6 +52,13 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
 
     return (
         <>
+            {/* Page JSON-LD */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(ld)
+                }}
+            />
             {/* Breadcrumbs */}
             <script
                 type="application/ld+json"

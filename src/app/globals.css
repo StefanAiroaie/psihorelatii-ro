@@ -34,7 +34,7 @@ html {
 
 /* Anchor scroll offset for sticky header */
 [id] {
-  scroll-margin-top: 4rem;
+  scroll-margin-top: 8rem;
   /* adjust based on header height */
 }
 

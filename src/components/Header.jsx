@@ -84,12 +84,12 @@ const Header = () => {
                             </PopoverGroup>
                         </nav>
                         {/* Call to Action */}
-                        <a
+                        {/* <a
                             className="btn bg-accent text-white px-2 py-2 rounded hover:bg-opacity-90 transition"
                             href="#anfrage"
                         >
                             Call To Action
-                        </a>
+                        </a> */}
                     </div>
                 </div>
 
@@ -143,12 +143,12 @@ const Header = () => {
 
                                     {/* Call to Action */}
 
-                                    <a
+                                    {/* <a
                                         className="btn bg-accent text-white px-2 py-2 rounded hover:bg-opacity-90 transition"
                                         href="#anfrage"
                                     >
                                         Call to action
-                                    </a>
+                                    </a> */}
                                 </div>
                             </div>
                         </div>

@@ -1,5 +1,7 @@
 // src/app/robots.js
-const baseUrl = "https://psihorelatii.ro"; // sincron cu sitemap.js
+import { DOMAIN } from "@/lib/metadata";
+
+const baseUrl = DOMAIN; // sincron cu sitemap.js
 
 export default function robots() {
     return {

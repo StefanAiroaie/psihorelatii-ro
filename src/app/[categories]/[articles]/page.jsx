@@ -1,4 +1,4 @@
-import { getArticleBySlug, getFirstArticleImageByCategorySlug, getAllArticlePaths } from "@/sanity/client";
+import { getArticleBySlugPublic, getFirstArticleImageByCategorySlug, getAllArticlePaths } from "@/sanity/client";
 import { buildPageMetadata, DOMAIN, fromSanityImage } from "@/lib/metadata";
 import FAQ from '@/components/FAQ'
 import PageTemplate from "@/components/PageTemplate";
@@ -20,7 +20,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { categories, articles } = await params;
-  const data = await getArticleBySlug(articles);
+  const data = await getArticleBySlugPublic(articles);
 
   // Prefer the article image; fall back to first article in category
   let image = fromSanityImage(data?.mainImage);
@@ -39,31 +39,12 @@ export async function generateMetadata({ params }) {
 
 export default async function PageArticle({ params }) {
   const { categories, articles } = await params;
-  const article = await getArticleBySlug(articles);
+  const article = await getArticleBySlugPublic(articles);
 
   if (!article) return notFound();
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Article',
-            headline: article?.title,
-            description: article?.description,
-            image: article?.mainImage ? [fromSanityImage(article.mainImage)] : undefined,
-            articleSection: categories,
-            datePublished: article?.publishedAt || undefined,
-            dateModified: article?._updatedAt || undefined,
-            mainEntityOfPage: {
-              '@type': 'WebPage',
-              '@id': `${DOMAIN}/${categories}/${articles}`
-            }
-          })
-        }}
-      />
       {Array.isArray(article?.faq) && article.faq.length > 0 && (
         <script
           type="application/ld+json"

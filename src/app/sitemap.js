@@ -1,13 +1,14 @@
 // src/app/sitemap.js
-import { client } from "@/sanity/client";
+import { client, SANITY_DOC_TYPE } from "@/sanity/client";
+import { DOMAIN } from "@/lib/metadata";
 
-const baseUrl = "https://psihorelatii.ro"; // schimbă dacă e alt domeniu
+const baseUrl = DOMAIN; // folosește domeniul din metadata centralizată
 export const revalidate = 60; // ISR pentru sitemap
 
 export default async function sitemap() {
     // 1) Categorii (tip Sanity: "category" – asigură-te că acesta este tipul corect în schema ta)
     const categories = await client.fetch(`
-        *[_type == "category" && defined(slug.current)][]{
+        *[_type == "${SANITY_DOC_TYPE.category}" && defined(slug.current)]{
             "slug": slug.current,
             _updatedAt
         }
@@ -16,9 +17,9 @@ export default async function sitemap() {
     // 2) Articole (tip Sanity real: "article" – ajustează dacă ai alt nume în dataset-ul tău)
     //    avem nevoie și de slug-ul categoriei părinte
     const articles = await client.fetch(`
-        *[_type == "article" && defined(slug.current) && defined(category->slug.current)][]{
+        *[_type == "${SANITY_DOC_TYPE.article}" && defined(slug.current) && defined(categories[0]->slug.current) && _createdAt <= now()]{
             "slug": slug.current,
-            "cat": category->slug.current,
+            "cat": categories[0]->slug.current,
             _updatedAt
         }
     `);

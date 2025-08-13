@@ -1,26 +1,27 @@
 import PageTemplate from "@/components/PageTemplate";
 import { buildPageMetadata, DOMAIN } from "@/lib/metadata";
 import { notFound } from "next/navigation";
-import { client, SANITY_DOC_TYPE } from "@/sanity/client";
+import { getPageBySlug } from "@/sanity/client";
 
-const slug = "politica-cookie"; //EDIT HERE THE PAGE NAME
-const url = `${DOMAIN}/${slug}`;
+// SINGLE SOURCE OF TRUTH for this static page
+const PAGE_SLUG = "politica-cookies"; // change only here
+const PAGE_URL = `${DOMAIN}/${PAGE_SLUG}`;
 
 export async function generateMetadata() {
-  const page = await client.fetch(`*[_type=="${SANITY_DOC_TYPE.page}" && slug.current=="${slug}"][0]{
-    title, description, mainImage, _updatedAt
-  }`);
-  return buildPageMetadata(page, { url });
+  const page = await getPageBySlug(PAGE_SLUG);
+  return buildPageMetadata(page, { url: PAGE_URL });
 }
 
 export const revalidate = 60;
 
 export default async function Page() {
-  const page = await client.fetch(`*[_type=="${SANITY_DOC_TYPE.page}" && slug.current=="${slug}"][0]{
-    title, description, mainImage, body, faq[]{question, answer}
-  }`);
+  const page = await getPageBySlug(PAGE_SLUG);
   if (!page) return notFound();
-  return <PageTemplate page={page} jsonLdType="WebPage" canonical={`/${slug}`} />;
+  return (
+    <PageTemplate
+      page={page}
+      jsonLdType="WebPage"
+      canonical={`/${PAGE_SLUG}`}
+    />
+  );
 }
-
-

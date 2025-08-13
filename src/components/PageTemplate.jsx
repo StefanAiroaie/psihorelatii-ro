@@ -8,6 +8,30 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
     const path = canonical?.startsWith('/') ? canonical : `/${canonical ?? ''}`;
     const absUrl = `${DOMAIN}${path}`;
 
+    const ogImage = page?.mainImage ? urlFor(page.mainImage).width(1200).height(630).url() : undefined;
+    const isArticle = jsonLdType === "Article";
+    const ld = isArticle
+        ? {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: page?.title,
+            description: page?.description,
+            image: ogImage ? [ogImage] : undefined,
+            datePublished: page?.publishedAt || undefined,
+            dateModified: page?._updatedAt || undefined,
+            author: page?.author?.name
+                ? { "@type": "Person", name: page.author.name }
+                : { "@type": "Organization", name: "Psihorelatii.ro" },
+            mainEntityOfPage: { "@type": "WebPage", "@id": absUrl }
+        }
+        : {
+            "@context": "https://schema.org",
+            "@type": jsonLdType,
+            name: page?.title,
+            description: page?.description,
+            mainEntityOfPage: { "@type": "WebPage", "@id": absUrl }
+        };
+
     // Build dynamic breadcrumbs from canonical path
     const segments = path.split('/').filter(Boolean);
     let acc = '';
@@ -28,19 +52,6 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
 
     return (
         <>
-            {/* JSON-LD tip pagină (WebPage / ContactPage etc.) */}
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": jsonLdType,
-                        name: page?.title,
-                        description: page?.description,
-                        mainEntityOfPage: { "@type": "WebPage", "@id": absUrl }
-                    })
-                }}
-            />
             {/* Breadcrumbs */}
             <script
                 type="application/ld+json"

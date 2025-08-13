@@ -70,12 +70,13 @@ const CATEGORY_BY_SLUG_GROQ = `*[_type=="${SANITY_DOC_TYPE.category}" && slug.cu
   faq[]{question, answer}
 }`;
 
-const ARTICLES_BY_CATEGORY_SLUG_GROQ = `*[_type=="${SANITY_DOC_TYPE.article}" && $catSlug in categories[]->slug.current]{
+const ARTICLES_BY_CATEGORY_SLUG_GROQ = `*[_type=="${SANITY_DOC_TYPE.article}" && $catSlug in categories[]->slug.current && _createdAt <= now()]{
   _id,
   title,
   "slug": slug.current,
   description,
-  mainImage
+  mainImage,
+  _createdAt
 }`;
 
 const ALL_CATEGORY_SLUGS_GROQ = `*[_type=="${SANITY_DOC_TYPE.category}"]{ "slug": slug.current }`;
@@ -87,7 +88,17 @@ const ARTICLE_BY_SLUG_GROQ = `*[_type=="${SANITY_DOC_TYPE.article}" && slug.curr
   description,
   mainImage,
   body,
-  publishedAt,
+  _createdAt,
+  _updatedAt,
+  faq[]{question, answer}
+}`;
+
+const ARTICLE_BY_SLUG_PUBLIC_GROQ = `*[_type=="${SANITY_DOC_TYPE.article}" && slug.current==$slug && _createdAt <= now()][0]{
+  title,
+  description,
+  mainImage,
+  body,
+  _createdAt,
   _updatedAt,
   faq[]{question, answer}
 }`;
@@ -97,7 +108,8 @@ const FIRST_ARTICLE_IMAGE_BY_CATEGORY_GROQ = `*[_type=="${SANITY_DOC_TYPE.articl
 const ALL_ARTICLE_PATHS_GROQ = `*[
   _type=="${SANITY_DOC_TYPE.article}" &&
   defined(categories[0]->slug.current) &&
-  defined(slug.current)
+  defined(slug.current) &&
+  _createdAt <= now()
 ]{
   "categories": categories[0]->slug.current,
   "articles": slug.current
@@ -132,6 +144,10 @@ export async function getAllArticleSlugs(): Promise<string[]> {
 }
 export async function getArticleBySlug(slug: string) {
   return client.fetch(ARTICLE_BY_SLUG_GROQ, { slug });
+}
+
+export async function getArticleBySlugPublic(slug: string) {
+  return client.fetch(ARTICLE_BY_SLUG_PUBLIC_GROQ, { slug });
 }
 
 export async function getFirstArticleImageByCategorySlug(slug: string) {

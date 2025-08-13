@@ -8,6 +8,24 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
     const path = canonical?.startsWith('/') ? canonical : `/${canonical ?? ''}`;
     const absUrl = `${DOMAIN}${path}`;
 
+    // Build dynamic breadcrumbs from canonical path
+    const segments = path.split('/').filter(Boolean);
+    let acc = '';
+    const dynamicCrumbs = segments.map((seg) => {
+        acc += `/${seg}`;
+        return {
+            name: decodeURIComponent(seg)
+                .replace(/-/g, ' ')
+                .replace(/\b\w/g, (ch) => ch.toUpperCase()),
+            href: `${DOMAIN}${acc}`
+        };
+    });
+
+    let crumbs = [{ name: 'Acasă', href: `${DOMAIN}/` }, ...dynamicCrumbs];
+    if (page?.title && crumbs.length > 1) {
+        crumbs[crumbs.length - 1] = { name: page.title, href: absUrl };
+    }
+
     return (
         <>
             {/* JSON-LD tip pagină (WebPage / ContactPage etc.) */}
@@ -30,20 +48,31 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
                     __html: JSON.stringify({
                         "@context": "https://schema.org",
                         "@type": "BreadcrumbList",
-                        itemListElement: [
-                            { "@type": "ListItem", position: 1, name: "Acasă", item: `${DOMAIN}/` },
-                            { "@type": "ListItem", position: 2, name: page?.title || "", item: absUrl }
-                        ]
+                        itemListElement: crumbs.map((c, i) => ({
+                            "@type": "ListItem",
+                            position: i + 1,
+                            name: c.name,
+                            item: c.href
+                        }))
                     })
                 }}
             />
-
             <section className="mx-auto mt-32 max-w-7xl px-6 lg:px-8">
                 <article className="relative isolate overflow-hidden bg-white px-6 lg:overflow-visible lg:px-0">
                     <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">
                         <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
                             <div className="lg:pr-4">
                                 <div className="lg:max-w-lg">
+                                    {/* Breadcrumbs */}
+                                    <p className="text-sm font-semibold text-accent">
+                                        {crumbs.map((crumb, index) => (
+                                            <span key={crumb.href}>
+                                                <a href={crumb.href}>{crumb.name}</a>
+                                                {index < crumbs.length - 1 && ' / '}
+                                            </span>
+                                        ))}
+                                    </p>
+                                    {/* Article */}
                                     <h1 className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-primary sm:text-5xl">
                                         {page?.title}
                                     </h1>
@@ -55,7 +84,7 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
                         {page?.mainImage && (
                             <div className="-mt-12 -ml-12 p-12 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden">
                                 <Image
-                                    alt={page?.title || ""}
+                                    alt={page?.title || `${DOMAIN}${path}`}
                                     src={urlFor(page.mainImage).width(1200).height(800).url()}
                                     width={1200}
                                     height={800}

@@ -1,11 +1,10 @@
 import { PortableText } from '@portabletext/react';
-
-const FAQ = ({ faqs }) => {
+const FAQ = ({ FAQ }) => {
 
     const faqStructuredData = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": faqs?.map((faq) => ({
+        "mainEntity": FAQ?.map((faq) => ({
             "@type": "Question",
             "name": faq.question,
             "acceptedAnswer": {
@@ -18,7 +17,6 @@ const FAQ = ({ faqs }) => {
             }
         }))
     };
-
     return (
         <>
             {/* FAQ section */}
@@ -26,7 +24,7 @@ const FAQ = ({ faqs }) => {
                 <div id="faq" className="mx-auto max-w-7xl px-6">
                     <h2 className="text-4xl font-semibold tracking-tight text-primary ">Häufig gestellte Fragen</h2>
                     <dl className="mt-20 divide-y divide-gray-900/10">
-                        {faqs?.map((faq, index) => (
+                        {FAQ?.map((faq, index) => (
                             <div key={index} className="py-8 first:pt-0 last:pb-0 lg:grid lg:grid-cols-12 lg:gap-8">
                                 <dt className="text-base/7 font-semibold text-accent lg:col-span-5">{faq.question}</dt>
                                 <dd className="mt-4 lg:col-span-7 lg:mt-0">
@@ -85,7 +83,6 @@ const FAQ = ({ faqs }) => {
                     </dl>
                 </div>
             </section >
-
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}

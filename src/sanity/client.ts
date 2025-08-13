@@ -36,9 +36,9 @@ export function urlFor(source: SanityImageSource) {
 export interface SanityPage {
   title?: string;
   description?: string;
-  mainImage?: any;
-  body?: any;
-  faq?: { question: string; answer: any }[];
+  mainImage?: SanityImageSource | null;
+  body?: unknown;
+  faq?: { question: string; answer: unknown }[];
   _updatedAt?: string;
 }
 
@@ -47,10 +47,10 @@ export interface SanityArticleListItem {
   title: string;
   slug: string; // already resolved to string
   description?: string;
-  mainImage?: any;
+  mainImage?: SanityImageSource | null;
 }
 
-export interface SanityCategory extends SanityPage { }
+export type SanityCategory = SanityPage;
 
 // GROQ snippets
 const PAGE_BY_SLUG_GROQ = `*[_type=="${SANITY_DOC_TYPE.page}" && slug.current==$slug][0]{
@@ -82,6 +82,27 @@ const ALL_CATEGORY_SLUGS_GROQ = `*[_type=="${SANITY_DOC_TYPE.category}"]{ "slug"
 const ALL_PAGE_SLUGS_GROQ = `*[_type=="${SANITY_DOC_TYPE.page}"]{ "slug": slug.current }`;
 const ALL_ARTICLE_SLUGS_GROQ = `*[_type=="${SANITY_DOC_TYPE.article}"]{ "slug": slug.current }`;
 
+const ARTICLE_BY_SLUG_GROQ = `*[_type=="${SANITY_DOC_TYPE.article}" && slug.current==$slug][0]{
+  title,
+  description,
+  mainImage,
+  body,
+  publishedAt,
+  _updatedAt,
+  faq[]{question, answer}
+}`;
+
+const FIRST_ARTICLE_IMAGE_BY_CATEGORY_GROQ = `*[_type=="${SANITY_DOC_TYPE.article}" && $slug in categories[]->slug.current][0]{ mainImage }`;
+
+const ALL_ARTICLE_PATHS_GROQ = `*[
+  _type=="${SANITY_DOC_TYPE.article}" &&
+  defined(categories[0]->slug.current) &&
+  defined(slug.current)
+]{
+  "categories": categories[0]->slug.current,
+  "articles": slug.current
+}`;
+
 // Thin wrappers
 export async function getPageBySlug(slug: string): Promise<SanityPage | null> {
   return client.fetch(PAGE_BY_SLUG_GROQ, { slug });
@@ -109,6 +130,14 @@ export async function getAllArticleSlugs(): Promise<string[]> {
   const rows: { slug: string }[] = await client.fetch(ALL_ARTICLE_SLUGS_GROQ);
   return rows.map(r => r.slug).filter(Boolean);
 }
+export async function getArticleBySlug(slug: string) {
+  return client.fetch(ARTICLE_BY_SLUG_GROQ, { slug });
+}
 
+export async function getFirstArticleImageByCategorySlug(slug: string) {
+  return client.fetch(FIRST_ARTICLE_IMAGE_BY_CATEGORY_GROQ, { slug });
+}
 
-
+export async function getAllArticlePaths(): Promise<{ categories: string; articles: string }[]> {
+  return client.fetch(ALL_ARTICLE_PATHS_GROQ);
+}

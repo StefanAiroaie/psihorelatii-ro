@@ -99,14 +99,14 @@ export default async function Page() {
       <section id="categorii" className="mx-auto mt-24 max-w-7xl px-6 lg:px-8">
         <Categories categories={categories} />
       </section>
-      <section id="articole" className="mx-auto mt-24 max-w-7xl px-6 lg:px-8">
+      {/* <section id="articole" className="mx-auto mt-24 max-w-7xl px-6 lg:px-8">
         <Articles
 
           articles={articlesWithHref}
           title="Articole la întâmplare"
           intro="O selecție aleatorie la fiecare refresh."
         />
-      </section>
+      </section> */}
 
       {Array.isArray(page?.faq) && page.faq.length > 0 && <FAQ FAQ={page.faq} />}
     </>

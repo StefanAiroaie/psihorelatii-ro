@@ -27,7 +27,7 @@ export default async function sitemap() {
     // 3) Rute statice reale (fără #ancore)
     const staticRoutes = [
         { path: "/", changeFrequency: "weekly", priority: 1.0 },
-        { path: "/datenschutz", changeFrequency: "yearly", priority: 0.2 },
+        { path: "/politica-confidentialitate", changeFrequency: "yearly", priority: 0.2 },
         { path: "/contact", changeFrequency: "yearly", priority: 0.3 },
     ];
 

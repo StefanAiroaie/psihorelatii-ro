@@ -24,8 +24,8 @@ export function fromSanityImage(img) {
  */
 export function buildPageMetadata(input) {
     const { title, description, image, path = "/" } = input || {};
-    const fullTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
-    const desc = description || "Pagini informative.";
+    const fullTitle = title ? title : SITE_NAME;
+    const desc = description ? description : title;
     const canonical = `${DOMAIN}${path}`;
 
     return {

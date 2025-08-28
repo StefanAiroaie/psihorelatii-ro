@@ -104,7 +104,7 @@ const Header = () => {
                             {/* Logo Mobile Menu */}
                             <a href="/" className="justify-center items-center">
                                 <Image
-                                    src="/logo.avif"
+                                    src="/logo.png"
                                     alt={`Logo - ${SITE_NAME}`}
                                     width={450} height={225}  // 3× pentru ecrane dense
                                     sizes="150px"

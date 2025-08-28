@@ -1,6 +1,7 @@
 "use client"
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react';
+import { SITE_NAME } from '@/lib/metadata';
 const navigation = [
 
     { name: 'Informatii pe categorii', href: '/#categorii' },
@@ -34,9 +35,11 @@ const Header = () => {
                     <a href="/" className="justify-center items-center">
                         <Image
                             src="/logo.png"
-                            alt="Logo psihorelatii.ro"
-                            width={200}
-                            height={100}
+                            alt={`Logo - ${SITE_NAME}`}
+                            width={250} height={150}  // 3× pentru ecrane dense
+                            sizes="150px"
+                            quality={45}
+                            className='p-4'
                         />
                     </a>
                     {/* Burger Menu Icon */}
@@ -100,11 +103,13 @@ const Header = () => {
                         <div className="flex items-center justify-between">
                             {/* Logo Mobile Menu */}
                             <a href="/" className="justify-center items-center">
-                                <img
-                                    src="/logoweila.png"
-                                    alt="Logo psihorelatii.ro"
-                                    width={200}
-                                    height={100}
+                                <Image
+                                    src="/logo.avif"
+                                    alt={`Logo - ${SITE_NAME}`}
+                                    width={450} height={225}  // 3× pentru ecrane dense
+                                    sizes="150px"
+                                    quality={45}
+                                    className='p-4'
                                 />
                             </a>
                             {/* Close Button*/}

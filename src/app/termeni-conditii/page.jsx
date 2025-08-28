@@ -9,7 +9,13 @@ const PAGE_URL = `${DOMAIN}/${PAGE_SLUG}`;
 
 export async function generateMetadata() {
   const page = await getPageBySlug(PAGE_SLUG);
-  return buildPageMetadata(page, { url: PAGE_URL });
+
+  return buildPageMetadata({
+    title: page?.title,
+    description: page?.description,
+    image: page?.mainImage ? fromSanityImage(page.mainImage) : undefined,
+    path: `/${PAGE_SLUG}`,
+  });
 }
 
 export const revalidate = 60;

@@ -2,6 +2,7 @@ import PageTemplate from "@/components/PageTemplate";
 import { buildPageMetadata, DOMAIN } from "@/lib/metadata";
 import { notFound } from "next/navigation";
 import { getPageBySlug } from "@/sanity/client";
+import { fromSanityImage } from "@/lib/metadata";
 
 // SINGLE SOURCE OF TRUTH for this static page
 const PAGE_SLUG = "disclaimer"; // change only here

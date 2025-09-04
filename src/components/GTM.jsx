@@ -3,7 +3,7 @@ import Script from 'next/script';
 import { useCookieConsent } from '../context/CookieConsent';
 
 
-const GTM_ID = 'GTM-KFBNX4ZW';
+const GTM_ID = 'GTM-KKT24HL4';
 
 const GTM = () => {
     const { cookiesAccepted } = useCookieConsent();

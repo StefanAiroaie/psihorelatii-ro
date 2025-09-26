@@ -43,14 +43,14 @@ export default async function sitemap() {
     const categoryEntries = categories.map((c) => ({
         url: `${baseUrl}/${c.slug}`,
         lastModified: c._updatedAt ? new Date(c._updatedAt).toISOString() : nowIso,
-        changeFrequency: "monthly",
+        changeFrequency: "weekly",
         priority: 0.8,
     }));
 
     const articleEntries = articles.map((a) => ({
         url: `${baseUrl}/${a.cat}/${a.slug}`,
         lastModified: a._updatedAt ? new Date(a._updatedAt).toISOString() : nowIso,
-        changeFrequency: "weekly",
+        changeFrequency: "monthly",
         priority: 0.7,
     }));
 

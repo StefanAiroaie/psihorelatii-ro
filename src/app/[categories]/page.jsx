@@ -45,7 +45,7 @@ export default async function CategoryPage({ params }) {
             itemListElement: (articles || []).map((art, idx) => ({
               "@type": "ListItem",
               position: idx + 1,
-              url: `${DOMAIN}/${art.slug}`,
+              url: `${DOMAIN}/${categories}/${art.slug}`,
               name: art.title,
               description: art.description || undefined,
             })),

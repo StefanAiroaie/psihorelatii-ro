@@ -8,6 +8,7 @@ import { CookieConsentProvider } from '@/context/CookieConsent';
 import CookieBanner from '@/components/CookieBanner';
 import Footer from '@/components/Footer'
 import Script from 'next/script';
+import AdsenseScript from '@/components/AdsenseScript';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,6 +55,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <CookieConsentProvider>
+          <AdsenseScript />
           <GTM />
           <Header />
           {children}

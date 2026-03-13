@@ -1,8 +1,10 @@
-import { getArticleBySlugPublic, getFirstArticleImageByCategorySlug, getAllArticlePaths } from "@/sanity/client";
-import { buildPageMetadata, DOMAIN, fromSanityImage } from "@/lib/metadata";
+import { getArticleBySlugPublic, getFirstArticleImageByCategorySlug, getAllArticlePaths, getArticlesByCategorySlug } from "@/sanity/client";
+import { buildPageMetadata, fromSanityImage } from "@/lib/metadata";
 import FAQ from '@/components/FAQ'
 import PageTemplate from "@/components/PageTemplate";
 import { notFound } from "next/navigation";
+import Articles from "@/components/Articles";
+import { DOMAIN } from "@/lib/siteConfig";
 
 function ptToPlain(blocks) {
   if (!Array.isArray(blocks)) return '';
@@ -33,7 +35,8 @@ export async function generateMetadata({ params }) {
     title: data?.title || 'Articol',
     description: data?.description,
     image,
-    path: `/${categories}/${articles}`
+    path: `/${categories}/${articles}`,
+    type: "article",
   });
 }
 
@@ -43,9 +46,23 @@ export default async function PageArticle({ params }) {
 
   if (!article) return notFound();
 
+  const relatedArticlesRaw = await getArticlesByCategorySlug(categories);
+  const relatedArticles = (relatedArticlesRaw || [])
+    .filter((item) => item.slug !== articles)
+    .slice(0, 3);
+
   return (
     <>
       <PageTemplate page={article} jsonLdType="Article" canonical={`/${categories}/${articles}`} />
+
+      {relatedArticles.length > 0 && (
+        <Articles
+          articles={relatedArticles}
+          categorySlug={categories}
+          title="Citeste si"
+          intro="Articole din aceeasi categorie, utile pentru aprofundare."
+        />
+      )}
 
       {Array.isArray(article?.faq) && article.faq.length > 0 && (
         <FAQ FAQ={article.faq} />

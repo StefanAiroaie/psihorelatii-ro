@@ -1,26 +1,15 @@
 "use client"
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react';
-import { SITE_NAME } from '@/lib/metadata';
-const navigation = [
-
-    { name: 'Informatii pe categorii', href: '/#categorii' },
-    { name: 'Întrebări frecvente', href: '#faq' },
-]
 import Image from 'next/image';
 import Link from "next/link";
+import { CATEGORY_NAV, SITE_NAME } from '@/lib/siteConfig';
 
-import {
-    Dialog,
-    DialogPanel,
-    Disclosure,
-    Popover,
-    PopoverButton,
-    PopoverGroup,
-    PopoverPanel,
-} from '@headlessui/react';
-
-
+const navigation = [
+    { name: 'Categorii', href: '/#categorii' },
+    { name: 'Despre noi', href: '/despre-noi' },
+    { name: 'Contact', href: '/contact' },
+];
 
 const Header = () => {
 
@@ -32,7 +21,7 @@ const Header = () => {
                 {/* Desktop Nav */}
                 <div className="container mx-auto flex justify-between items-center">
                     {/* Logo */}
-                    <a href="/" className="justify-center items-center">
+                    <Link href="/" className="justify-center items-center">
                         <Image
                             src="/logo.png"
                             alt={`Logo - ${SITE_NAME}`}
@@ -41,7 +30,7 @@ const Header = () => {
                             quality={45}
                             className='p-4'
                         />
-                    </a>
+                    </Link>
                     {/* Burger Menu Icon */}
                     <div className="flex lg:hidden justify-end">
                         <button
@@ -55,54 +44,29 @@ const Header = () => {
                     </div>
                     {/* Nav */}
                     <div className="hidden lg:flex items-center gap-8">
-                        <nav className="flex gap-8">
-                            <PopoverGroup className="hidden gap-3 lg:flex ">
-                                {/* Services */}
-                                <Popover className="relative">
-                                    {/* <PopoverButton className="flex justify-center items-center text-sm font-semibold text-dark  hover:text-accent transition">
-                                        Dienstleistungen
-                                        <ChevronDownIcon className="h-5 w-5 text-accent" aria-hidden="true" />
-                                    </PopoverButton> */}
-
-                                    <PopoverPanel className="absolute left-0 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
-                                        <div className="p-4">
-
-                                        </div>
-                                    </PopoverPanel>
-                                </Popover>
-                                {/* Links */}
-                                {navigation.map((subLink, j) => (
-                                    <Popover key={j} >
-                                        <PopoverButton className="flex justify-center items-center text-sm font-semibold text-dark">
-                                            <Link className="pr-4 hover:text-accent transition"
-                                                href={subLink.href}
-
-                                            >
-                                                {subLink.name}
-                                            </Link>
-
-                                        </PopoverButton>
-                                    </Popover>
-                                ))}
-                            </PopoverGroup>
+                        <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-dark">
+                            {navigation.map((subLink) => (
+                                <Link key={subLink.name} className="hover:text-accent transition" href={subLink.href}>
+                                    {subLink.name}
+                                </Link>
+                            ))}
+                            {CATEGORY_NAV.map((item) => (
+                                <Link key={item.slug} className="hover:text-accent transition" href={`/${item.slug}`}>
+                                    {item.title}
+                                </Link>
+                            ))}
                         </nav>
-                        {/* Call to Action */}
-                        {/* <a
-                            className="btn bg-accent text-white px-2 py-2 rounded hover:bg-opacity-90 transition"
-                            href="#anfrage"
-                        >
-                            Call To Action
-                        </a> */}
                     </div>
                 </div>
 
                 {/* Mobile NAV */}
-                <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-                    <div className="fixed inset-0 z-50" />
-                    <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+                {mobileMenuOpen && (
+                    <div className="fixed inset-0 z-50 lg:hidden">
+                        <div className="absolute inset-0 bg-black/30" onClick={() => setMobileMenuOpen(false)} />
+                        <div className="absolute inset-y-0 right-0 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                         <div className="flex items-center justify-between">
                             {/* Logo Mobile Menu */}
-                            <a href="/" className="justify-center items-center">
+                            <Link href="/" className="justify-center items-center" onClick={() => setMobileMenuOpen(false)}>
                                 <Image
                                     src="/logo.png"
                                     alt={`Logo - ${SITE_NAME}`}
@@ -111,7 +75,7 @@ const Header = () => {
                                     quality={45}
                                     className='p-4'
                                 />
-                            </a>
+                            </Link>
                             {/* Close Button*/}
                             <button
                                 type="button"
@@ -126,47 +90,38 @@ const Header = () => {
                         <div className="mt-6 flow-root">
                             <div className="-my-6 divide-y divide-gray-500/10">
                                 <div className="space-y-2 py-6">
-                                    <Disclosure as="div" className="-mx-3">
-
-                                    </Disclosure>
-                                    {/* Links */}
-                                    {navigation.map((subLink, j) => (
-                                        <Popover key={j} >
-                                            <PopoverButton className="flex justify-center items-center text-sm font-semibold text-dark">
-                                                <Link
-                                                    className="pr-4 hover:text-accent transition"
-                                                    href={subLink.href}
-                                                    onClick={() => setMobileMenuOpen(false)}
-                                                >
-                                                    {subLink.name}
-                                                </Link>
-                                            </PopoverButton>
-                                        </Popover>
+                                    {navigation.map((subLink) => (
+                                        <Link
+                                            key={subLink.name}
+                                            className="block py-2 text-sm font-semibold text-dark hover:text-accent transition"
+                                            href={subLink.href}
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            {subLink.name}
+                                        </Link>
                                     ))}
-                                </div>
-                                <div className="py-6 flex justify-center" >
-
-                                    {/* Call to Action */}
-
-                                    {/* <a
-                                        className="btn bg-accent text-white px-2 py-2 rounded hover:bg-opacity-90 transition"
-                                        href="#anfrage"
-                                    >
-                                        Call to action
-                                    </a> */}
+                                    {CATEGORY_NAV.map((item) => (
+                                        <Link
+                                            key={item.slug}
+                                            className="block py-2 text-sm font-semibold text-dark hover:text-accent transition"
+                                            href={`/${item.slug}`}
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            {item.title}
+                                        </Link>
+                                    ))}
                                 </div>
                             </div>
                         </div>
-                    </DialogPanel>
-                </Dialog>
+                        </div>
+                    </div>
+                )}
             </header>
         </>
     );
 };
 
 export default Header;
-
-
 
 
 

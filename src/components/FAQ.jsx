@@ -1,4 +1,5 @@
 import { PortableText } from '@portabletext/react';
+import { urlFor } from '@/sanity/client';
 const FAQ = ({ FAQ }) => {
 
     const faqStructuredData = {

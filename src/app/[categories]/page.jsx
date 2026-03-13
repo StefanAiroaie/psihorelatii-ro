@@ -1,9 +1,10 @@
 import { getCategoryBySlug, getArticlesByCategorySlug, getAllCategorySlugs } from "@/sanity/client"
-import { buildPageMetadata, DOMAIN, fromSanityImage } from "@/lib/metadata";
+import { buildPageMetadata, fromSanityImage } from "@/lib/metadata";
 import PageTemplate from "@/components/PageTemplate";
 import Articles from "@/components/Articles";
 import FAQ from "@/components/FAQ";
 import { notFound } from "next/navigation";
+import { DOMAIN } from "@/lib/siteConfig";
 
 export const revalidate = 60;
 

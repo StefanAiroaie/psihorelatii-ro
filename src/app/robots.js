@@ -1,5 +1,5 @@
 // src/app/robots.js
-import { DOMAIN } from "@/lib/metadata";
+import { DOMAIN } from "@/lib/siteConfig";
 
 const baseUrl = DOMAIN; // sincron cu sitemap.js
 

@@ -1,8 +1,5 @@
 import { urlFor } from "@/sanity/client";
-
-// Centralize these two so you don't repeat them anywhere else
-export const SITE_NAME = "Psihologia relatiilor";
-export const DOMAIN = "https://psihorelatii.ro";
+import { DOMAIN, SITE_NAME } from "@/lib/siteConfig";
 
 // Helper if you use Sanity images for OG
 export function fromSanityImage(img) {
@@ -23,9 +20,11 @@ export function fromSanityImage(img) {
  *   });
  */
 export function buildPageMetadata(input) {
-    const { title, description, image, path = "/" } = input || {};
+    const { title, description, image, path = "/", type = "website" } = input || {};
     const fullTitle = title ? title : SITE_NAME;
-    const desc = description ? description : title;
+    const desc =
+        description ||
+        "Ghiduri clare despre relatii, atasament, gestionarea emotiilor si dezvoltare personala.";
     const canonical = `${DOMAIN}${path}`;
 
     return {
@@ -36,7 +35,7 @@ export function buildPageMetadata(input) {
             title: fullTitle,
             description: desc,
             url: canonical,
-            type: "website",
+            type,
             images: image ? [{ url: image, width: 1200, height: 630 }] : undefined,
         },
         twitter: {

@@ -1,6 +1,6 @@
 // src/app/sitemap.js
 import { client, SANITY_DOC_TYPE } from "@/sanity/client";
-import { DOMAIN } from "@/lib/metadata";
+import { DOMAIN, STATIC_ROUTES } from "@/lib/siteConfig";
 
 const baseUrl = DOMAIN; // folosește domeniul din metadata centralizată
 export const revalidate = 60; // ISR pentru sitemap
@@ -25,15 +25,9 @@ export default async function sitemap() {
     `);
 
     // 3) Rute statice reale (fără #ancore)
-    const staticRoutes = [
-        { path: "/", changeFrequency: "weekly", priority: 1.0 },
-        { path: "/politica-confidentialitate", changeFrequency: "yearly", priority: 0.2 },
-        { path: "/contact", changeFrequency: "yearly", priority: 0.3 },
-    ];
-
     const nowIso = new Date().toISOString();
 
-    const staticEntries = staticRoutes.map(({ path, changeFrequency, priority }) => ({
+    const staticEntries = STATIC_ROUTES.map(({ path, changeFrequency, priority }) => ({
         url: `${baseUrl}${path}`,
         lastModified: nowIso,
         changeFrequency,

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { PortableText } from "@portabletext/react";
 import { urlFor } from "@/sanity/client";
-import { DOMAIN, SITE_NAME } from "@/lib/metadata";
+import { DOMAIN, SITE_NAME } from "@/lib/siteConfig";
 
 export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }) {
     const path = canonical?.startsWith('/') ? canonical : `/${canonical ?? ''}`;
@@ -115,11 +115,16 @@ export default function PageTemplate({ page, jsonLdType = "WebPage", canonical }
                         <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
                             <div className="lg:pr-4">
                                 <div className="max-w-xl text-base/7 text-dark lg:max-w-lg text-justify">
+                                    {page?.title && (
+                                        <h1 className="mb-6 text-3xl font-bold text-primary">
+                                            {page.title}
+                                        </h1>
+                                    )}
                                     <PortableText
                                         value={page?.body}
                                         components={{
                                             block: {
-                                                h1: ({ children }) => <h1 className="text-3xl font-bold mt-6 mb-4 text-primary">{children}</h1>,
+                                                h1: ({ children }) => <h2 className="text-2xl font-semibold mt-5 mb-3 text-primary">{children}</h2>,
                                                 h2: ({ children }) => <h2 className="text-2xl font-semibold mt-5 mb-3 text-primary">{children}</h2>,
                                                 h3: ({ children }) => <h3 className="text-xl font-medium mt-4 mb-2 text-primary">{children}</h3>,
                                                 normal: ({ children }) => <p className="mb-4 text-dark">{children}</p>,

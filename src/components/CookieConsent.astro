@@ -3,159 +3,169 @@ const GTM_ID = "GTM-KKT24HL4";
 const ADSENSE_CLIENT = "ca-pub-2362578685287844";
 ---
 
-<>
-  <script is:inline>
-    {`
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
-      window.gtag('consent', 'default', {
-        ad_storage: 'denied',
-        analytics_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied'
-      });
-    `}
-  </script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+  window.gtag('consent', 'default', {
+    ad_storage: 'denied',
+    analytics_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied'
+  });
+</script>
 
-  <div class="cookie-banner" id="cookie-banner" hidden>
-    <p>
-      Folosim cookie-uri pentru masurarea traficului si pentru reclame Google doar dupa
-      consimtamant. Detalii in <a href="/politica-cookie">Politica de cookie</a> si
-      <a href="/politica-confidentialitate">Politica de confidentialitate</a>.
-    </p>
-    <div class="cookie-actions">
-      <button type="button" data-consent-action="accept">Accepta toate</button>
-      <button type="button" data-consent-action="reject" class="ghost">Respinge</button>
-    </div>
+<div class="cookie-banner" id="cookie-banner" hidden>
+  <p>
+    Folosim cookie-uri pentru măsurarea traficului și pentru reclame Google doar după
+    consimțământ. Detalii în <a href="/politica-cookie">Politica de cookie</a> și
+    <a href="/politica-confidentialitate">Politica de confidențialitate</a>.
+  </p>
+  <div class="cookie-actions">
+    <button type="button" id="cookie-accept">Acceptă toate</button>
+    <button type="button" id="cookie-reject" class="ghost">Respinge</button>
   </div>
+</div>
 
-  <button type="button" class="cookie-settings" id="cookie-settings" hidden>
-    Setari cookie
-  </button>
+<button type="button" class="cookie-fab" id="cookie-fab" hidden aria-label="Setări cookie">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <circle cx="8" cy="9" r="1.2" fill="currentColor" stroke="none"/>
+    <circle cx="14" cy="7" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="16" cy="13" r="1.2" fill="currentColor" stroke="none"/>
+    <circle cx="10" cy="14" r="1.4" fill="currentColor" stroke="none"/>
+    <circle cx="6" cy="13" r="0.8" fill="currentColor" stroke="none"/>
+    <circle cx="13" cy="17" r="1" fill="currentColor" stroke="none"/>
+  </svg>
+</button>
 
-  <script is:inline define:vars={{ GTM_ID, ADSENSE_CLIENT }}>
-    {`
-      const CONSENT_VERSION = '1.0';
-      const CONSENT_MAX_AGE_DAYS = 365;
-      const STORAGE_KEYS = {
-        accepted: 'cookiesAccepted',
-        version: 'cookiesVersion',
-        ts: 'cookiesTimestamp'
-      };
+<script is:inline define:vars={{ GTM_ID, ADSENSE_CLIENT }}>
+  (function() {
+    var CONSENT_VERSION = '1.0';
+    var CONSENT_MAX_AGE_DAYS = 365;
+    var KEYS = {
+      accepted: 'cookiesAccepted',
+      version: 'cookiesVersion',
+      ts: 'cookiesTimestamp'
+    };
 
-      const safeStorage = {
-        get(key) {
-          try { return window.localStorage.getItem(key); } catch { return null; }
-        },
-        set(key, value) {
-          try { window.localStorage.setItem(key, value); } catch {}
-        },
-        remove(key) {
-          try { window.localStorage.removeItem(key); } catch {}
-        }
-      };
+    function storageGet(key) {
+      try { return localStorage.getItem(key); } catch(e) { return null; }
+    }
+    function storageSet(key, val) {
+      try { localStorage.setItem(key, val); } catch(e) {}
+    }
+    function storageRemove(key) {
+      try { localStorage.removeItem(key); } catch(e) {}
+    }
 
-      const banner = document.getElementById('cookie-banner');
-      const settingsButton = document.getElementById('cookie-settings');
-      let loadedServices = false;
+    var banner = document.getElementById('cookie-banner');
+    var fab = document.getElementById('cookie-fab');
+    var acceptBtn = document.getElementById('cookie-accept');
+    var rejectBtn = document.getElementById('cookie-reject');
+    var loadedServices = false;
 
-      function consentExpired(ts) {
-        if (!ts) return true;
-        const days = (Date.now() - Number(ts)) / (1000 * 60 * 60 * 24);
-        return days > CONSENT_MAX_AGE_DAYS;
+    function consentExpired(ts) {
+      if (!ts) return true;
+      return (Date.now() - Number(ts)) / (1000 * 60 * 60 * 24) > CONSENT_MAX_AGE_DAYS;
+    }
+
+    function updateConsent(granted) {
+      var val = granted ? 'granted' : 'denied';
+      window.gtag('consent', 'update', {
+        ad_storage: val,
+        analytics_storage: val,
+        ad_user_data: val,
+        ad_personalization: val
+      });
+      window.dataLayer.push({ event: 'cookie_consent_updated', cookiesAccepted: granted });
+    }
+
+    function loadScript(src, attrs) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      if (attrs) {
+        for (var k in attrs) { s.setAttribute(k, attrs[k]); }
       }
+      document.head.appendChild(s);
+    }
 
-      function updateConsent(state) {
-        const value = state ? 'granted' : 'denied';
-        window.gtag('consent', 'update', {
-          ad_storage: value,
-          analytics_storage: value,
-          ad_user_data: value,
-          ad_personalization: value
-        });
-        window.dataLayer.push({ event: 'cookie_consent_updated', cookiesAccepted: state });
-      }
+    function loadServices() {
+      if (loadedServices) return;
+      loadedServices = true;
+      loadScript('https://www.googletagmanager.com/gtm.js?id=' + GTM_ID);
+      window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+      loadScript('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT, {
+        crossorigin: 'anonymous'
+      });
+    }
 
-      function loadScript(src, attrs = {}) {
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = true;
-        Object.entries(attrs).forEach(([key, value]) => script.setAttribute(key, value));
-        document.head.appendChild(script);
-      }
+    function persistDecision(accepted) {
+      storageSet(KEYS.accepted, accepted ? 'true' : 'false');
+      storageSet(KEYS.version, CONSENT_VERSION);
+      storageSet(KEYS.ts, String(Date.now()));
+    }
 
-      function loadServices() {
-        if (loadedServices) return;
-        loadedServices = true;
-        loadScript('https://www.googletagmanager.com/gtm.js?id=' + GTM_ID);
-        loadScript('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT, {
-          crossorigin: 'anonymous'
-        });
-      }
+    function showBanner() {
+      if (banner) banner.removeAttribute('hidden');
+      if (fab) fab.setAttribute('hidden', '');
+    }
 
-      function persistDecision(accepted) {
-        safeStorage.set(STORAGE_KEYS.accepted, accepted ? 'true' : 'false');
-        safeStorage.set(STORAGE_KEYS.version, CONSENT_VERSION);
-        safeStorage.set(STORAGE_KEYS.ts, String(Date.now()));
-      }
+    function hideBanner() {
+      if (banner) banner.setAttribute('hidden', '');
+      if (fab) fab.removeAttribute('hidden');
+    }
 
-      function showBanner() {
-        banner?.removeAttribute('hidden');
-        settingsButton?.removeAttribute('hidden');
-      }
+    function acceptCookies() {
+      persistDecision(true);
+      updateConsent(true);
+      loadServices();
+      hideBanner();
+    }
 
-      function hideBanner() {
-        banner?.setAttribute('hidden', '');
-        settingsButton?.removeAttribute('hidden');
-      }
+    function rejectCookies() {
+      persistDecision(false);
+      updateConsent(false);
+      hideBanner();
+    }
 
-      function acceptCookies() {
-        persistDecision(true);
-        updateConsent(true);
-        loadServices();
-        hideBanner();
-      }
+    function reopenPreferences() {
+      storageRemove(KEYS.accepted);
+      storageRemove(KEYS.version);
+      storageRemove(KEYS.ts);
+      showBanner();
+    }
 
-      function rejectCookies() {
-        persistDecision(false);
-        updateConsent(false);
-        hideBanner();
-      }
+    // Check existing consent
+    var storedConsent = storageGet(KEYS.accepted);
+    var storedVersion = storageGet(KEYS.version);
+    var storedTs = storageGet(KEYS.ts);
+    var validConsent = storedConsent !== null && storedVersion === CONSENT_VERSION && !consentExpired(storedTs);
 
-      function reopenPreferences() {
-        safeStorage.remove(STORAGE_KEYS.accepted);
-        safeStorage.remove(STORAGE_KEYS.version);
-        safeStorage.remove(STORAGE_KEYS.ts);
-        showBanner();
-      }
+    if (!validConsent) {
+      showBanner();
+    } else if (storedConsent === 'true') {
+      updateConsent(true);
+      loadServices();
+      hideBanner();
+    } else {
+      updateConsent(false);
+      hideBanner();
+    }
 
-      const storedConsent = safeStorage.get(STORAGE_KEYS.accepted);
-      const storedVersion = safeStorage.get(STORAGE_KEYS.version);
-      const storedTs = safeStorage.get(STORAGE_KEYS.ts);
-      const validConsent =
-        storedConsent !== null &&
-        storedVersion === CONSENT_VERSION &&
-        !consentExpired(storedTs);
-
-      if (!validConsent) {
-        showBanner();
-      } else if (storedConsent === 'true') {
-        updateConsent(true);
-        loadServices();
-        hideBanner();
-      } else {
-        updateConsent(false);
-        hideBanner();
-      }
-
-      banner?.querySelector('[data-consent-action="accept"]')?.addEventListener('click', acceptCookies);
-      banner?.querySelector('[data-consent-action="reject"]')?.addEventListener('click', rejectCookies);
-      settingsButton?.addEventListener('click', reopenPreferences);
-    `}
-  </script>
-</>
+    // Bind events
+    if (acceptBtn) acceptBtn.addEventListener('click', acceptCookies);
+    if (rejectBtn) rejectBtn.addEventListener('click', rejectCookies);
+    if (fab) fab.addEventListener('click', reopenPreferences);
+  })();
+</script>
 
 <style>
+  .cookie-banner[hidden],
+  .cookie-fab[hidden] {
+    display: none !important;
+  }
+
   .cookie-banner {
     position: fixed;
     right: 1rem;
@@ -164,17 +174,19 @@ const ADSENSE_CLIENT = "ca-pub-2362578685287844";
     width: min(28rem, calc(100vw - 2rem));
     display: grid;
     gap: 0.9rem;
-    padding: 1rem 1rem 1.05rem;
+    padding: 1.1rem 1.2rem 1.15rem;
     border-radius: 18px;
     border: 1px solid rgba(35, 56, 44, 0.12);
     background: rgba(255, 252, 247, 0.98);
     box-shadow: 0 22px 48px rgba(45, 42, 33, 0.18);
+    backdrop-filter: blur(10px);
   }
 
   .cookie-banner p {
     margin: 0;
     color: var(--muted);
     line-height: 1.65;
+    font-size: 0.92rem;
   }
 
   .cookie-banner a {
@@ -189,19 +201,21 @@ const ADSENSE_CLIENT = "ca-pub-2362578685287844";
     flex-wrap: wrap;
   }
 
-  .cookie-actions button,
-  .cookie-settings {
+  .cookie-actions button {
     border: 0;
     cursor: pointer;
     font: inherit;
-  }
-
-  .cookie-actions button {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1.1rem;
     border-radius: 999px;
     background: var(--forest);
     color: #fff;
     font-weight: 800;
+    font-size: 0.92rem;
+    transition: opacity 0.15s ease;
+  }
+
+  .cookie-actions button:hover {
+    opacity: 0.88;
   }
 
   .cookie-actions .ghost {
@@ -209,17 +223,28 @@ const ADSENSE_CLIENT = "ca-pub-2362578685287844";
     color: var(--forest);
   }
 
-  .cookie-settings {
+  .cookie-fab {
     position: fixed;
     right: 1rem;
     bottom: 1rem;
     z-index: 55;
-    padding: 0.7rem 0.95rem;
-    border-radius: 999px;
-    background: rgba(35, 56, 44, 0.92);
-    color: #fff;
-    font-weight: 700;
-    box-shadow: 0 14px 30px rgba(45, 42, 33, 0.18);
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(35, 56, 44, 0.12);
+    border-radius: 50%;
+    background: rgba(255, 252, 247, 0.96);
+    color: var(--forest);
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(45, 42, 33, 0.15);
+    backdrop-filter: blur(10px);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .cookie-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 10px 28px rgba(45, 42, 33, 0.22);
   }
 
   @media (max-width: 720px) {
@@ -227,6 +252,11 @@ const ADSENSE_CLIENT = "ca-pub-2362578685287844";
       left: 0.75rem;
       right: 0.75rem;
       width: auto;
+      bottom: 0.75rem;
+    }
+
+    .cookie-fab {
+      right: 0.75rem;
       bottom: 0.75rem;
     }
   }

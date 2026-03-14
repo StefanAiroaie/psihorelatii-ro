@@ -64,8 +64,9 @@ const { href, title, description, image, imageAlt, category, date } = Astro.prop
   .article-body h3 {
     margin: 0;
     font-family: "Fraunces", serif;
-    font-size: 1.35rem;
+    font-size: clamp(1.25rem, 1.5vw, 1.4rem);
     line-height: 1.2;
+    color: var(--forest);
   }
 
   .article-body p {

@@ -54,8 +54,9 @@ const { href, title, description, image } = Astro.props;
   .category-body h3 {
     margin: 0;
     font-family: "Fraunces", serif;
-    font-size: 1.38rem;
-    line-height: 1.18;
+    font-size: clamp(1.25rem, 1.5vw, 1.4rem);
+    line-height: 1.2;
+    color: var(--forest);
   }
 
   .category-body p {

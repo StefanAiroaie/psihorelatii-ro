@@ -1,0 +1,105 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  image?: string | null;
+  imageAlt?: string;
+  eyebrow?: string;
+  meta?: string[];
+}
+
+const { title, description, image, imageAlt, eyebrow, meta = [] } = Astro.props;
+---
+
+<section class="hero card">
+  <div class="hero-copy">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1>{title}</h1>
+    <p class="lede">{description}</p>
+    {meta.length > 0 && (
+      <ul class="hero-meta">
+        {meta.map((item) => <li>{item}</li>)}
+      </ul>
+    )}
+  </div>
+
+  {image && (
+    <div class="hero-media">
+      <img src={image} alt={imageAlt || title} loading="eager" width="640" height="480" />
+    </div>
+  )}
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 2rem;
+    padding: 1.6rem;
+    align-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top left, rgba(179, 84, 42, 0.12), transparent 28%),
+      linear-gradient(180deg, rgba(255, 252, 247, 0.92), rgba(255, 248, 239, 0.82));
+  }
+
+  .hero h1 {
+    margin: 0.9rem 0 1rem;
+    font-family: "Fraunces", serif;
+    font-size: clamp(2rem, 4.2vw, 4.2rem);
+    line-height: 1.02;
+    color: var(--forest);
+  }
+
+  .lede {
+    font-size: 1.08rem;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin: 1.1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hero-meta li {
+    padding: 0.7rem 0.9rem;
+    border-radius: 14px;
+    background: rgba(255, 252, 247, 0.92);
+    border: 1px solid rgba(179, 84, 42, 0.12);
+    color: var(--forest);
+    font-size: 0.92rem;
+    font-weight: 700;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  .hero-media img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: calc(var(--radius-xl) - 10px);
+    box-shadow: 0 18px 40px rgba(45, 42, 33, 0.14);
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 1.2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 8vw, 2.8rem);
+      line-height: 1.06;
+      text-wrap: balance;
+    }
+
+    .lede {
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+interface Props {
+  items: Array<{ question: string; answer: string }>;
+}
+
+const { items } = Astro.props;
+const stripMarkdown = (value: string) =>
+  value
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/(\*\*|__|\*|_|`)/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+---
+
+{items.length > 0 && (
+  <section class="faq card" id="faq">
+    <div class="faq-head">
+      <p class="eyebrow">FAQ</p>
+      <h2>Intrebari frecvente</h2>
+    </div>
+    <div class="faq-list">
+      {items.map((item) => (
+        <details>
+          <summary>{stripMarkdown(item.question)}</summary>
+          <p>{stripMarkdown(item.answer)}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .faq {
+    padding: 1.4rem;
+  }
+
+  .faq h2 {
+    margin: 0.7rem 0 0;
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.8rem, 2vw, 2.5rem);
+  }
+
+  .faq-list {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+  }
+
+  details {
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 800;
+    color: var(--forest);
+  }
+
+  details p {
+    margin: 0.9rem 0 0;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+</style>

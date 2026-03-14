@@ -1,0 +1,57 @@
+---
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import CookieConsent from "@/components/CookieConsent.astro";
+import StructuredData from "@/components/StructuredData.astro";
+import "@/styles/global.css";
+import { absoluteUrl, site } from "@/lib/content";
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string | null;
+  pathname: string;
+  type?: "website" | "article";
+  schema?: unknown[];
+}
+
+const { title, description, image, pathname, type = "website", schema = [] } = Astro.props;
+const canonical = absoluteUrl(pathname);
+const ogImage = image ? absoluteUrl(image) : absoluteUrl(site.defaultImage);
+---
+
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="ro_RO" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="alternate" href={canonical} hreflang="ro" />
+    <link rel="alternate" href={canonical} hreflang="x-default" />
+    {schema.map((item) => <StructuredData data={item} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Sari la continut</a>
+    <Header />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+    <CookieConsent />
+  </body>
+</html>

@@ -1,0 +1,157 @@
+---
+const navItems = [
+  { href: "/", label: "Acasa" },
+  { href: "/#categorii", label: "Categorii" },
+  { href: "/#articole-recente", label: "Articole noi" },
+  { href: "/despre-noi", label: "Despre noi" },
+  { href: "/contact", label: "Contact" },
+];
+---
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="/" aria-label="Psihorelatii.ro">
+      <img src="/logo.png" alt="Psihorelatii.ro" width="150" height="53" />
+    </a>
+
+    <nav class="primary-nav" aria-label="Navigare principală">
+      {navItems.map((item) => (
+        <a href={item.href}>{item.label}</a>
+      ))}
+    </nav>
+
+    <details class="mobile-nav">
+      <summary aria-label="Deschide meniul">Meniu</summary>
+      <nav class="mobile-panel" aria-label="Navigare mobilă">
+        {navItems.map((item) => (
+          <a href={item.href}>{item.label}</a>
+        ))}
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(16px);
+    background: rgba(251, 247, 240, 0.82);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    align-items: center;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    flex: 0 0 auto;
+  }
+
+  .brand img {
+    width: 150px;
+    height: auto;
+  }
+
+  .primary-nav {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    white-space: nowrap;
+    flex: 1 1 auto;
+  }
+
+  .primary-nav a {
+    position: relative;
+    padding: 0.15rem 0;
+    font-weight: 750;
+    color: var(--forest);
+    letter-spacing: 0.01em;
+  }
+
+  .primary-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.2rem;
+    width: 100%;
+    height: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    background: linear-gradient(90deg, var(--accent), rgba(179, 84, 42, 0.35));
+    transition: transform 160ms ease;
+  }
+
+  .primary-nav a:hover::after,
+  .primary-nav a:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .mobile-nav {
+    display: none;
+    position: relative;
+  }
+
+  .mobile-nav summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(35, 56, 44, 0.1);
+    background: rgba(255, 252, 247, 0.9);
+    color: var(--forest);
+    font-weight: 750;
+  }
+
+  .mobile-nav summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.65rem);
+    min-width: 220px;
+    display: grid;
+    padding: 0.55rem;
+    border-radius: 18px;
+    border: 1px solid rgba(35, 56, 44, 0.1);
+    background: rgba(255, 252, 247, 0.98);
+    box-shadow: 0 18px 38px rgba(45, 42, 33, 0.16);
+  }
+
+  .mobile-panel a {
+    padding: 0.8rem 0.85rem;
+    border-radius: 12px;
+    color: var(--forest);
+    font-weight: 700;
+  }
+
+  .mobile-panel a:hover {
+    background: rgba(35, 56, 44, 0.05);
+  }
+
+  @media (max-width: 960px) {
+    .primary-nav {
+      display: none;
+    }
+
+    .mobile-nav {
+      display: block;
+    }
+
+    .brand img {
+      width: 132px;
+    }
+  }
+</style>

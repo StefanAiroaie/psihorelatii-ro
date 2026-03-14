@@ -1,0 +1,353 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Hero from "@/components/Hero.astro";
+import CategoryCard from "@/components/CategoryCard.astro";
+import ArticleCard from "@/components/ArticleCard.astro";
+import FAQSection from "@/components/FAQSection.astro";
+import { getAllArticles, getAllCategories, getHomePage } from "@/lib/content";
+import { websiteSchema, organizationSchema, faqSchema } from "@/lib/schema";
+
+const home = await getHomePage();
+if (!home) throw new Error("Missing home page content.");
+
+const categories = await getAllCategories();
+const allArticles = await getAllArticles();
+const latestArticles = allArticles.slice(0, 6);
+const featuredArticle = latestArticles[0];
+const secondaryArticles = latestArticles.slice(1, 3);
+const quickLinks = allArticles.slice(6, 11);
+const Content = home.Content as any;
+const faqItems = home.data.faq ?? [];
+
+const schema: unknown[] = [websiteSchema(), organizationSchema()];
+if (faqItems.length) schema.push(faqSchema(faqItems));
+---
+
+<BaseLayout
+  title={home.data.metaTitle}
+  description={home.data.description}
+  image={home.data.image}
+  pathname="/"
+  schema={schema}
+>
+  <section class="shell page-shell">
+    <Hero
+      title={home.data.pageTitle}
+      description={home.data.description}
+      image={home.data.image}
+      imageAlt={home.data.imageAlt}
+      eyebrow="Psihologie aplicata, scrisa limpede"
+      meta={["Ghiduri practice pentru viata reala", "Relatii, emotii si dezvoltare personala", "Continut informativ, scris clar si onest"]}
+    />
+
+    <section class="overview-strip card" aria-label="Repere editoriale">
+      <div>
+        <span class="overview-label">Ce gasesti aici</span>
+        <strong>Articole clare, exemple practice si idei pe care le poti intelege usor</strong>
+      </div>
+      <div>
+        <span class="overview-label">Teme importante</span>
+        <strong>{categories.length} categorii despre relatii, atasament, emotii si echilibru personal</strong>
+      </div>
+      <div>
+        <span class="overview-label">Cum este scris</span>
+        <strong>Continut informativ, cu limite clare si fara promisiuni nerealiste</strong>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <section class="card content-panel">
+        <div class="prose">
+          <Content />
+        </div>
+      </section>
+    </div>
+
+    <section id="categorii" class="section-block">
+      <div class="section-head">
+        <p class="eyebrow">Navigare editoriala</p>
+        <h2>Categorii construite pentru intentii reale de cautare</h2>
+      </div>
+      <div class="grid grid-3">
+        {categories.map((category) => (
+          <CategoryCard
+            href={`/${category.data.slug}`}
+            title={category.data.title}
+            description={category.data.description}
+            image={category.data.image}
+          />
+        ))}
+      </div>
+    </section>
+
+    <section id="articole-recente" class="section-block">
+      <div class="section-head">
+        <p class="eyebrow">Articole recente</p>
+        <h2>Conținut nou, conectat și ușor de explorat</h2>
+      </div>
+      {featuredArticle && (
+        <div class="featured-grid">
+          <div class="featured-main">
+            <article class="featured-article card">
+              {featuredArticle.data.image && (
+                <img
+                  src={featuredArticle.data.image}
+                  alt={featuredArticle.data.imageAlt || featuredArticle.data.pageTitle}
+                  loading="lazy"
+                  width="640"
+                  height="360"
+                />
+              )}
+              <div class="featured-copy">
+                <p class="featured-kicker">Lectura recomandata</p>
+                <h3>
+                  <a href={`/${featuredArticle.data.category}/${featuredArticle.data.slug}`}>
+                    {featuredArticle.data.pageTitle}
+                  </a>
+                </h3>
+                <p>{featuredArticle.data.description}</p>
+                <a class="featured-link" href={`/${featuredArticle.data.category}/${featuredArticle.data.slug}`}>
+                  Citeste articolul
+                </a>
+              </div>
+            </article>
+
+            {quickLinks.length > 0 && (
+              <nav class="quick-links card" aria-label="Mai multe articole">
+                <p class="quick-links-label">Mai multe articole</p>
+                <ul>
+                  {quickLinks.map((article) => (
+                    <li>
+                      <a href={`/${article.data.category}/${article.data.slug}`}>
+                        {article.data.pageTitle}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <a class="quick-links-cta" href="#categorii">
+                  Exploreaza toate categoriile &rarr;
+                </a>
+              </nav>
+            )}
+          </div>
+
+          <div class="featured-side">
+            {secondaryArticles.map((article) => (
+              <ArticleCard
+                href={`/${article.data.category}/${article.data.slug}`}
+                title={article.data.pageTitle}
+                description={article.data.description}
+                image={article.data.image}
+                imageAlt={article.data.imageAlt}
+                category={article.data.categoryTitle}
+                date={article.data.updatedAt}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div class="grid grid-3 article-grid-list">
+        {latestArticles.slice(3).map((article) => (
+          <ArticleCard
+            href={`/${article.data.category}/${article.data.slug}`}
+            title={article.data.pageTitle}
+            description={article.data.description}
+            image={article.data.image}
+            imageAlt={article.data.imageAlt}
+            category={article.data.categoryTitle}
+            date={article.data.updatedAt}
+          />
+        ))}
+      </div>
+    </section>
+
+    <FAQSection items={faqItems} />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-shell {
+    display: grid;
+    gap: 2rem;
+    padding: 1.2rem 0 0;
+  }
+
+  .content-panel {
+    padding: 1.5rem;
+  }
+
+  .overview-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 1.1rem 1.2rem;
+  }
+
+  .overview-strip div {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .overview-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: var(--accent-deep);
+  }
+
+  .overview-strip strong {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--forest);
+  }
+
+  .section-block {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .section-head h2 {
+    margin: 0.65rem 0 0;
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.8rem, 2.6vw, 3rem);
+    line-height: 1.05;
+    color: var(--forest);
+  }
+
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .featured-main {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .featured-article {
+    overflow: hidden;
+    align-self: start;
+  }
+
+  .featured-article img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .featured-copy {
+    display: grid;
+    gap: 0.8rem;
+    padding: 1.35rem;
+  }
+
+  .featured-kicker {
+    margin: 0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: var(--accent-deep);
+  }
+
+  .featured-copy h3 {
+    margin: 0;
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.9rem, 2.7vw, 2.8rem);
+    line-height: 1.06;
+    color: var(--forest);
+  }
+
+  .featured-copy p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+
+  .featured-link {
+    width: fit-content;
+    color: var(--accent-deep);
+    font-weight: 800;
+  }
+
+  .featured-side {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .quick-links {
+    padding: 1.2rem 1.35rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .quick-links-label {
+    margin: 0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: var(--accent-deep);
+  }
+
+  .quick-links ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .quick-links li {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border, #e8e0d8);
+  }
+
+  .quick-links li:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .quick-links a {
+    color: var(--forest);
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-decoration: none;
+  }
+
+  .quick-links a:hover {
+    color: var(--accent-deep);
+  }
+
+  .quick-links-cta {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--accent-deep) !important;
+  }
+
+  .article-grid-list {
+    margin-top: 0.2rem;
+  }
+
+  @media (max-width: 1000px) {
+    .overview-strip,
+    .featured-grid,
+    .grid-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

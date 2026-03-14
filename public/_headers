@@ -1,0 +1,12 @@
+# Static assets for Astro on Cloudflare Pages
+/_astro/*
+  Cache-Control: public,max-age=31536000,immutable
+
+/content/images/*
+  Cache-Control: public,max-age=31536000,immutable
+
+/favicon.ico
+  Cache-Control: public,max-age=604800
+
+/logo.png
+  Cache-Control: public,max-age=604800

@@ -1,0 +1,67 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Hero from "@/components/Hero.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import FAQSection from "@/components/FAQSection.astro";
+import { getStaticPages } from "@/lib/content";
+import { breadcrumbSchema, faqSchema, organizationSchema } from "@/lib/schema";
+
+export async function getStaticPaths() {
+  const pages = await getStaticPages();
+  return pages.map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: Awaited<ReturnType<typeof getStaticPages>>[number] };
+const Content = entry.Content as any;
+const faqItems = entry.data.faq ?? [];
+
+const pathname = `/${entry.data.slug}`;
+const breadcrumbs = [
+  { name: "Acasa", href: "/" },
+  { name: entry.data.pageTitle, href: pathname },
+];
+const schema: unknown[] = [organizationSchema(), breadcrumbSchema(breadcrumbs)];
+if (faqItems.length) schema.push(faqSchema(faqItems));
+---
+
+<BaseLayout
+  title={entry.data.metaTitle}
+  description={entry.data.description}
+  image={entry.data.image}
+  pathname={pathname}
+  schema={schema}
+>
+  <section class="shell page-shell">
+    <Breadcrumbs items={breadcrumbs} />
+    <Hero
+      title={entry.data.pageTitle}
+      description={entry.data.description}
+      image={entry.data.image}
+      imageAlt={entry.data.imageAlt}
+      eyebrow="Pagina editoriala"
+    />
+
+    <section class="card content-panel">
+      <div class="prose">
+        <Content />
+      </div>
+    </section>
+
+    <FAQSection items={faqItems} />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-shell {
+    display: grid;
+    gap: 1.4rem;
+    padding: 1.2rem 0 0;
+  }
+
+  .content-panel {
+    padding: 1.5rem;
+  }
+</style>

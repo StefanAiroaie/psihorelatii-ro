@@ -1,0 +1,132 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Hero from "@/components/Hero.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import ArticleCard from "@/components/ArticleCard.astro";
+import FAQSection from "@/components/FAQSection.astro";
+import { absoluteUrl, getAllCategories, getArticlesByCategory } from "@/lib/content";
+import { breadcrumbSchema, collectionSchema, faqSchema, organizationSchema } from "@/lib/schema";
+
+export async function getStaticPaths() {
+  const categories = await getAllCategories();
+  return categories.map((entry) => ({
+    params: { category: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: Awaited<ReturnType<typeof getAllCategories>>[number] };
+const Content = entry.Content as any;
+const articles = await getArticlesByCategory(entry.data.slug);
+const faqItems = entry.data.faq ?? [];
+const pathname = `/${entry.data.slug}`;
+const breadcrumbs = [
+  { name: "Acasa", href: "/" },
+  { name: entry.data.pageTitle, href: pathname },
+];
+const schema: unknown[] = [
+  organizationSchema(),
+  breadcrumbSchema(breadcrumbs),
+  collectionSchema({
+    title: entry.data.pageTitle,
+    description: entry.data.description,
+    url: absoluteUrl(pathname),
+    items: articles.map((item) => ({
+      title: item.data.pageTitle,
+      description: item.data.description,
+      url: absoluteUrl(`/${item.data.category}/${item.data.slug}`),
+    })),
+  }),
+];
+if (faqItems.length) schema.push(faqSchema(faqItems));
+---
+
+<BaseLayout
+  title={entry.data.metaTitle}
+  description={entry.data.description}
+  image={entry.data.image}
+  pathname={pathname}
+  schema={schema}
+>
+  <section class="shell page-shell">
+    <Breadcrumbs items={breadcrumbs} />
+    <Hero
+      title={entry.data.pageTitle}
+      description={entry.data.description}
+      image={entry.data.image}
+      imageAlt={entry.data.imageAlt}
+      eyebrow="Categorie editoriala"
+      meta={[
+        `${articles.length} ghiduri si exemple practice`,
+        faqItems.length ? `${faqItems.length} raspunsuri FAQ pe tema` : "Actualizare editoriala periodica",
+        "Navigare tematica si articole conexe",
+      ]}
+    />
+
+    <section class="card content-panel">
+      <div class="prose">
+        <Content />
+      </div>
+    </section>
+
+    <section class="section-block">
+      <div class="section-head">
+        <p class="eyebrow">Articole din categorie</p>
+        <h2>Toate materialele din această temă</h2>
+      </div>
+      <div class="grid grid-3">
+        {articles.map((article) => (
+          <ArticleCard
+            href={`/${article.data.category}/${article.data.slug}`}
+            title={article.data.pageTitle}
+            description={article.data.description}
+            image={article.data.image}
+            imageAlt={article.data.imageAlt}
+            category={article.data.categoryTitle}
+            date={article.data.updatedAt}
+          />
+        ))}
+      </div>
+    </section>
+
+    <FAQSection items={faqItems} />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-shell {
+    display: grid;
+    gap: 1.4rem;
+    padding: 1.2rem 0 0;
+  }
+
+  .content-panel {
+    padding: 1.5rem;
+  }
+
+  .section-block {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .section-head h2 {
+    margin: 0.65rem 0 0;
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.8rem, 2.4vw, 3rem);
+  }
+
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 1000px) {
+    .grid-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

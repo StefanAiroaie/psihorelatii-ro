@@ -1,0 +1,54 @@
+---
+interface Props {
+  headings: Array<{ depth: number; slug: string; text: string }>;
+}
+
+const { headings } = Astro.props;
+const filtered = headings.filter((item) => item.depth >= 2 && item.depth <= 3);
+---
+
+{filtered.length > 0 && (
+  <aside class="toc card">
+    <p class="eyebrow">Cuprins</p>
+    <nav aria-label="Cuprinsul paginii">
+      <ul>
+        {filtered.map((item) => (
+          <li class={`depth-${item.depth}`}>
+            <a href={`#${item.slug}`}>{item.text}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </aside>
+)}
+
+<style>
+  .toc {
+    padding: 1.2rem;
+    position: sticky;
+    top: 7rem;
+  }
+
+  .toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .toc a {
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .depth-3 {
+    padding-left: 0.9rem;
+  }
+
+  @media (max-width: 1100px) {
+    .toc {
+      position: static;
+    }
+  }
+</style>

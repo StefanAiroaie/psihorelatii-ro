@@ -1,0 +1,63 @@
+---
+const links = [
+  { href: "/despre-noi", label: "Despre noi" },
+  { href: "/contact", label: "Contact" },
+  { href: "/politica-confidentialitate", label: "Politica de confidentialitate" },
+  { href: "/politica-cookie", label: "Politica de cookie" },
+  { href: "/politica-afiliere", label: "Politica de afiliere" },
+  { href: "/disclaimer", label: "Disclaimer" },
+  { href: "/termeni-conditii", label: "Termeni si conditii" },
+];
+---
+
+<footer class="site-footer">
+  <div class="shell footer-grid">
+    <div class="footer-brand">
+      <p class="eyebrow">Proiect editorial</p>
+      <h2>Psihologie aplicata, scrisa clar si organizata pentru oameni reali.</h2>
+      <p>
+        Continutul de pe site are rol informativ si educational. Pentru evaluare individuala sau
+        situatii urgente, cauta sprijin specializat.
+      </p>
+    </div>
+
+    <nav aria-label="Linkuri utile" class="footer-links">
+      {links.map((link) => (
+        <a href={link.href}>{link.label}</a>
+      ))}
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 5rem;
+    padding: 2rem 0 3rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 1.5rem;
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(180deg, rgba(35, 56, 44, 0.96), rgba(22, 36, 29, 0.98));
+    color: rgba(255, 250, 243, 0.92);
+  }
+
+  .footer-brand h2 {
+    margin: 0.8rem 0;
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.7rem, 2vw, 2.4rem);
+    line-height: 1.1;
+  }
+
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.8rem 1rem;
+  }
+
+  .footer-links a {
+    color: rgba(255, 250, 243, 0.88);
+  }
+</style>

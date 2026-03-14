@@ -1,0 +1,72 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  image?: string | null;
+}
+
+const { href, title, description, image } = Astro.props;
+---
+
+<article class="category-card card">
+  {image && <img src={image} alt={title} loading="lazy" width="640" height="360" />}
+  <div class="category-body">
+    <p class="category-kicker">Categorie editoriala</p>
+    <h3><a href={href}>{title}</a></h3>
+    <p>{description}</p>
+    <a class="category-link" href={href}>Exploreaza categoria</a>
+  </div>
+</article>
+
+<style>
+  .category-card {
+    overflow: hidden;
+    transition: transform 180ms ease, border-color 180ms ease;
+  }
+
+  .category-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(35, 56, 44, 0.16);
+  }
+
+  .category-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .category-body {
+    display: grid;
+    gap: 0.8rem;
+    padding: 1.2rem;
+  }
+
+  .category-kicker {
+    margin: 0;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: var(--accent-deep);
+  }
+
+  .category-body h3 {
+    margin: 0;
+    font-family: "Fraunces", serif;
+    font-size: 1.38rem;
+    line-height: 1.18;
+  }
+
+  .category-body p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .category-link {
+    width: fit-content;
+    color: var(--forest);
+    font-weight: 800;
+  }
+</style>

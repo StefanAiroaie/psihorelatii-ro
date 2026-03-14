@@ -1,0 +1,155 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Hero from "@/components/Hero.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
+import FAQSection from "@/components/FAQSection.astro";
+import ArticleCard from "@/components/ArticleCard.astro";
+import EditorialNote from "@/components/EditorialNote.astro";
+import { absoluteUrl, formatDate, getAllArticles, getRelatedArticles } from "@/lib/content";
+import { articleSchema, breadcrumbSchema, faqSchema, organizationSchema } from "@/lib/schema";
+
+export async function getStaticPaths() {
+  const articles = await getAllArticles();
+  return articles.map((entry) => ({
+    params: { category: entry.data.category, slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: Awaited<ReturnType<typeof getAllArticles>>[number] };
+const Content = entry.Content as any;
+const headings = await entry.getHeadings();
+const related = await getRelatedArticles(entry.data.category, entry.data.slug, 3);
+const faqItems = entry.data.faq ?? [];
+const pathname = `/${entry.data.category}/${entry.data.slug}`;
+const breadcrumbs = [
+  { name: "Acasa", href: "/" },
+  { name: entry.data.categoryTitle, href: `/${entry.data.category}` },
+  { name: entry.data.pageTitle, href: pathname },
+];
+const schema: unknown[] = [
+  organizationSchema(),
+  breadcrumbSchema(breadcrumbs),
+  articleSchema({
+    title: entry.data.metaTitle,
+    description: entry.data.description,
+    image: entry.data.image,
+    url: absoluteUrl(pathname),
+    publishedAt: entry.data.publishedAt,
+    updatedAt: entry.data.updatedAt,
+  }),
+];
+if (faqItems.length) schema.push(faqSchema(faqItems));
+---
+
+<BaseLayout
+  title={entry.data.metaTitle}
+  description={entry.data.description}
+  image={entry.data.image}
+  pathname={pathname}
+  type="article"
+  schema={schema}
+>
+  <section class="shell article-shell">
+    <Breadcrumbs items={breadcrumbs} />
+    <Hero
+      title={entry.data.pageTitle}
+      description={entry.data.description}
+      image={entry.data.image}
+      imageAlt={entry.data.imageAlt}
+      eyebrow={entry.data.categoryTitle}
+      meta={[
+        formatDate(entry.data.publishedAt),
+        `${entry.readingMinutes || 1} min citire`,
+        faqItems.length ? `${faqItems.length} intrebari frecvente incluse` : "Exemple si pasi aplicabili",
+      ]}
+    />
+
+    <div class="article-grid">
+      <section class="card content-panel">
+        <div class="prose">
+          <Content />
+        </div>
+      </section>
+      <TableOfContents headings={headings} />
+    </div>
+
+    {related.length > 0 && (
+      <section class="section-block">
+        <div class="section-head">
+          <p class="eyebrow">Articole conexe</p>
+          <h2>Continua lectura in aceeasi categorie</h2>
+        </div>
+        <div class="grid grid-3">
+          {related.map((article) => (
+            <ArticleCard
+              href={`/${article.data.category}/${article.data.slug}`}
+              title={article.data.pageTitle}
+              description={article.data.description}
+              image={article.data.image}
+              imageAlt={article.data.imageAlt}
+              category={article.data.categoryTitle}
+              date={article.data.updatedAt}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <FAQSection items={faqItems} />
+
+    <EditorialNote
+      publishedAt={entry.data.publishedAt}
+      updatedAt={entry.data.updatedAt}
+      categoryLabel={entry.data.categoryTitle}
+      readingMinutes={entry.readingMinutes}
+    />
+  </section>
+</BaseLayout>
+
+<style>
+  .article-shell {
+    display: grid;
+    gap: 1.4rem;
+    padding: 1.2rem 0 0;
+  }
+
+  .article-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .content-panel {
+    padding: 1.5rem;
+  }
+
+  .section-block {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .section-head h2 {
+    margin: 0.65rem 0 0;
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.8rem, 2.4vw, 3rem);
+  }
+
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 1100px) {
+    .article-grid,
+    .grid-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

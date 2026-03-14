@@ -1,0 +1,81 @@
+---
+import { formatDate } from "@/lib/content";
+
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  image?: string | null;
+  imageAlt?: string;
+  category?: string;
+  date?: string;
+}
+
+const { href, title, description, image, imageAlt, category, date } = Astro.props;
+---
+
+<article class="article-card card">
+  {image && <img src={image} alt={imageAlt || title} loading="lazy" width="640" height="360" />}
+  <div class="article-body">
+    <div class="article-meta">
+      {category && <span>{category}</span>}
+      {date && <time datetime={date}>{formatDate(date)}</time>}
+    </div>
+    <h3><a href={href}>{title}</a></h3>
+    <p>{description}</p>
+    <a class="article-link" href={href}>Citeste articolul</a>
+  </div>
+</article>
+
+<style>
+  .article-card {
+    overflow: hidden;
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  }
+
+  .article-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(179, 84, 42, 0.2);
+  }
+
+  .article-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .article-body {
+    display: grid;
+    gap: 0.85rem;
+    padding: 1.2rem;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    color: var(--muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .article-body h3 {
+    margin: 0;
+    font-family: "Fraunces", serif;
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+
+  .article-body p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .article-link {
+    color: var(--accent-deep);
+    font-weight: 800;
+  }
+</style>

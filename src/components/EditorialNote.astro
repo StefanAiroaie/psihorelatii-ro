@@ -1,0 +1,98 @@
+---
+import { formatDate, site } from "@/lib/content";
+
+interface Props {
+  publishedAt?: string;
+  updatedAt?: string;
+  categoryLabel?: string;
+  readingMinutes?: number;
+}
+
+const { publishedAt, updatedAt, categoryLabel, readingMinutes } = Astro.props;
+---
+
+<aside class="editorial-note card" aria-label="Informatii editoriale">
+  <div class="editorial-head">
+    <p class="eyebrow">Despre autor</p>
+    <h2>{site.editorial.authorName}</h2>
+    <p class="author-role">{site.editorial.authorRole}</p>
+  </div>
+
+  <p class="editorial-copy">{site.editorial.authorBio}</p>
+
+  <div class="editorial-grid">
+    <p>
+      <strong>Articol din:</strong> {categoryLabel || "Psihologie aplicata"}
+    </p>
+    {publishedAt && (
+      <p>
+        <strong>Publicat:</strong> {formatDate(publishedAt)}
+      </p>
+    )}
+    {(updatedAt || publishedAt) && (
+      <p>
+        <strong>Ultima revizie:</strong> {formatDate(updatedAt || publishedAt)}
+      </p>
+    )}
+    {readingMinutes && (
+      <p>
+        <strong>Timp estimat:</strong> {readingMinutes} minute
+      </p>
+    )}
+  </div>
+
+  <p class="editorial-note-copy">{site.editorial.disclaimer}</p>
+  <a class="editorial-link" href={site.editorial.contactPath}>Trimite o corectie sau o observatie</a>
+</aside>
+
+<style>
+  .editorial-note {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem 1.35rem;
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(135deg, rgba(35, 56, 44, 0.08), rgba(179, 84, 42, 0.06)),
+      var(--surface);
+  }
+
+  .editorial-head h2 {
+    margin: 0.55rem 0 0;
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.25rem, 1.8vw, 1.7rem);
+    line-height: 1.15;
+    color: var(--forest);
+  }
+
+  .author-role {
+    margin: 0.3rem 0 0;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1.1rem;
+  }
+
+  .editorial-grid p,
+  .editorial-copy,
+  .editorial-note-copy {
+    margin: 0;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .editorial-link {
+    width: fit-content;
+    color: var(--accent-deep);
+    font-weight: 800;
+  }
+
+  @media (max-width: 720px) {
+    .editorial-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

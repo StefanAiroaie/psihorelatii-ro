@@ -1,0 +1,150 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import { getAllArticles, getAllCategories } from "@/lib/content";
+import { organizationSchema, breadcrumbSchema } from "@/lib/schema";
+
+const categories = await getAllCategories();
+const allArticles = await getAllArticles();
+const breadcrumbs = [
+  { name: "Acasa", href: "/" },
+  { name: "Toate articolele", href: "/toate-articolele" },
+];
+const schema = [organizationSchema(), breadcrumbSchema(breadcrumbs)];
+---
+
+<BaseLayout
+  title="Toate articolele - Psihorelatii.ro | Index complet pe categorii"
+  description="Lista completă a tuturor ghidurilor publicate pe Psihorelatii.ro, organizate pe categorii: relații, atașament, emoții, dezvoltare personală și psihologie practică."
+  pathname="/toate-articolele"
+  schema={schema}
+>
+  <section class="shell page-shell">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="page-header">
+      <p class="eyebrow">Index editorial</p>
+      <h1>Toate articolele</h1>
+      <p class="page-lede">
+        {allArticles.length} ghiduri practice, organizate pe {categories.length} categorii.
+        Alege o temă și explorează în ritmul tău.
+      </p>
+    </div>
+
+    <div class="index-grid">
+      {categories.map((cat) => {
+        const catArticles = allArticles.filter((a) => a.data.category === cat.data.slug);
+        return catArticles.length > 0 && (
+          <section class="index-col card">
+            <h2><a href={`/${cat.data.slug}`}>{cat.data.pageTitle}</a></h2>
+            <p class="index-count">{catArticles.length} articole</p>
+            <ul>
+              {catArticles.map((article) => (
+                <li>
+                  <a href={`/${article.data.category}/${article.data.slug}`}>{article.data.pageTitle}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-shell {
+    display: grid;
+    gap: 1.4rem;
+    padding: 1.2rem 0 0;
+  }
+
+  .page-header {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-family: "Fraunces", serif;
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    line-height: 1.06;
+    color: var(--forest);
+  }
+
+  .page-lede {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.2rem;
+  }
+
+  .index-col {
+    padding: 1.3rem 1.4rem;
+  }
+
+  .index-col h2 {
+    margin: 0;
+    font-family: "Fraunces", serif;
+    font-size: 1.2rem;
+    line-height: 1.25;
+  }
+
+  .index-col h2 a {
+    color: var(--forest);
+  }
+
+  .index-col h2 a:hover {
+    color: var(--accent-deep);
+  }
+
+  .index-count {
+    margin: 0.3rem 0 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-deep);
+  }
+
+  .index-col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .index-col li {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .index-col li:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .index-col li a {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .index-col li a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 900px) {
+    .index-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

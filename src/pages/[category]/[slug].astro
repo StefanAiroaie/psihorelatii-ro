@@ -6,7 +6,7 @@ import TableOfContents from "@/components/TableOfContents.astro";
 import FAQSection from "@/components/FAQSection.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
 import EditorialNote from "@/components/EditorialNote.astro";
-import { absoluteUrl, formatDate, getAllArticles, getRelatedArticles } from "@/lib/content";
+import { absoluteUrl, formatDate, getAllArticles, getRelatedArticles, getCrossCategoryArticles } from "@/lib/content";
 import { articleSchema, breadcrumbSchema, faqSchema, organizationSchema } from "@/lib/schema";
 
 export async function getStaticPaths() {
@@ -21,6 +21,7 @@ const { entry } = Astro.props as { entry: Awaited<ReturnType<typeof getAllArticl
 const Content = entry.Content as any;
 const headings = await entry.getHeadings();
 const related = await getRelatedArticles(entry.data.category, entry.data.slug, 3);
+const crossCategory = await getCrossCategoryArticles(entry.data.category, entry.data.slug, 3);
 const faqItems = entry.data.faq ?? [];
 const pathname = `/${entry.data.category}/${entry.data.slug}`;
 const breadcrumbs = [
@@ -83,6 +84,28 @@ if (faqItems.length) schema.push(faqSchema(faqItems));
         </div>
         <div class="grid grid-3">
           {related.map((article) => (
+            <ArticleCard
+              href={`/${article.data.category}/${article.data.slug}`}
+              title={article.data.pageTitle}
+              description={article.data.description}
+              image={article.data.image}
+              imageAlt={article.data.imageAlt}
+              category={article.data.categoryTitle}
+              date={article.data.updatedAt}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    {crossCategory.length > 0 && (
+      <section class="section-block">
+        <div class="section-head">
+          <p class="eyebrow">Explorează și</p>
+          <h2>Articole din alte categorii</h2>
+        </div>
+        <div class="grid grid-3">
+          {crossCategory.map((article) => (
             <ArticleCard
               href={`/${article.data.category}/${article.data.slug}`}
               title={article.data.pageTitle}

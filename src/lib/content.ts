@@ -129,7 +129,28 @@ export async function getArticlesByCategory(category: string) {
 
 export async function getRelatedArticles(category: string, currentSlug: string, limit = 3) {
   const articles = await getArticlesByCategory(category);
-  return articles.filter((entry) => entry.data.slug !== currentSlug).slice(0, limit);
+  const others = articles.filter((entry) => entry.data.slug !== currentSlug);
+  if (others.length <= limit) return others;
+  let hash = 0;
+  for (let i = 0; i < currentSlug.length; i++) {
+    hash = ((hash << 5) - hash + currentSlug.charCodeAt(i)) | 0;
+  }
+  const offset = Math.abs(hash) % Math.max(1, others.length - limit);
+  return others.slice(offset, offset + limit);
+}
+
+export async function getCrossCategoryArticles(category: string, currentSlug: string, limit = 3) {
+  const articles = await getAllArticles();
+  const others = articles.filter(
+    (entry) => entry.data.category !== category && entry.data.slug !== currentSlug
+  );
+  // Use a simple hash of the slug to pick a deterministic but varied offset
+  let hash = 0;
+  for (let i = 0; i < currentSlug.length; i++) {
+    hash = ((hash << 5) - hash + currentSlug.charCodeAt(i)) | 0;
+  }
+  const offset = Math.abs(hash) % Math.max(1, others.length - limit);
+  return others.slice(offset, offset + limit);
 }
 
 export function absoluteUrl(pathname: string) {

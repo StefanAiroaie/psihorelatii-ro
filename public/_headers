@@ -10,8 +10,10 @@
 /_astro/*
   Cache-Control: public,max-age=31536000,immutable
 
+# Cai STABILE care se rescriu (Codex suprascrie pe aceeasi cale) -> NU immutable.
+# immutable ar bloca edge-ul Cloudflare pe versiunea veche la nesfarsit.
 /content/images/*
-  Cache-Control: public,max-age=31536000,immutable
+  Cache-Control: public,max-age=86400
 
 /favicon.ico
   Cache-Control: public,max-age=604800

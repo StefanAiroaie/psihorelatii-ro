@@ -1,0 +1,15 @@
+# Redirecturi Cloudflare Pages — psihorelatii.ro
+#
+# 2026-08-03 — comasarea familiei „plan de 30 de zile".
+# Cele 6 articole aveau schelet H2 aproape identic (canibalizare de șablon):
+# 4 din 6 erau „Crawled – currently not indexed" în GSC, iar familia întreagă
+# a făcut 0 clicuri / 0 afișări în 3 luni. Din 9 variante de cuvinte-cheie,
+# doar „plan de dezvoltare personala" are volum măsurabil (50/lună, RO).
+# Am păstrat pilonul din dezvoltare-personala și l-am întărit la ~2530 cuvinte,
+# cu o secțiune care acoperă fiecare intent redirecționat.
+
+/atasament-stiluri-afective/plan-de-30-de-zile-pentru-imbunatatirea-stilului-de-atasament    /dezvoltare-personala/plan-de-30-de-zile-pentru-dezvoltare-personala    301
+/despartiri-refacere/plan-de-30-de-zile-pentru-vindecare-emotionala-dupa-o-despartire        /dezvoltare-personala/plan-de-30-de-zile-pentru-dezvoltare-personala    301
+/gestionarea-emotiilor/plan-de-30-de-zile-pentru-imbunatatirea-gestionarii-emotiilor         /dezvoltare-personala/plan-de-30-de-zile-pentru-dezvoltare-personala    301
+/psihologie-practica/plan-de-30-de-zile-pentru-aplicarea-psihologiei-practice-in-viata-ta    /dezvoltare-personala/plan-de-30-de-zile-pentru-dezvoltare-personala    301
+/relatii/plan-de-30-de-zile-pentru-imbunatatirea-relatiei-de-cuplu                           /dezvoltare-personala/plan-de-30-de-zile-pentru-dezvoltare-personala    301
